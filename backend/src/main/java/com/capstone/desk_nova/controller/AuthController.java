@@ -1,9 +1,13 @@
 package com.capstone.desk_nova.controller;
 
 
+import com.capstone.desk_nova.dto.auth.LoginRequest;
+import com.capstone.desk_nova.dto.auth.RegisterRequest;
 import com.capstone.desk_nova.model.Users;
 
 import com.capstone.desk_nova.service.AuthService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -20,16 +24,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public Map<String, Object> register(@RequestBody Users users) {
-        return authService.register(users);
+    public ResponseEntity<Map<String, Object>> register(
+            @Valid @RequestBody RegisterRequest user
+    ) {
+        return ResponseEntity.ok(authService.register(user));
     }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> body) {
-
-        return authService.login(
-                body.get("email"),
-                body.get("password")
-        );
+    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginRequest req) {
+        return ResponseEntity.ok(authService.login(req));
     }
 }

@@ -1,18 +1,14 @@
 package com.capstone.desk_nova.service;
 
-import com.capstone.desk_nova.exceptions.AccountDoesNotExistException;
 import com.capstone.desk_nova.model.Tickets;
-import com.capstone.desk_nova.model.Users;
 import com.capstone.desk_nova.repository.TicketsRepository;
 import com.capstone.desk_nova.repository.UsersRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Data
@@ -28,7 +24,8 @@ public class TicketsService {
     }
 
     public Tickets getTicketsById(Long id) {
-        return ticketsRepository.findById(id).orElseThrow(()-> new RuntimeException("error"));
+        return ticketsRepository.findById(id).orElseThrow(
+                ()-> new EntityNotFoundException("Ticket with" + id + " does not exist"));
     }
 
     public Tickets createTicket(Tickets ticket) {
