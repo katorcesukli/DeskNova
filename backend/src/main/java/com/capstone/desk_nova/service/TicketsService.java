@@ -41,11 +41,7 @@ public class TicketsService {
         return ticketsRepository.save(tickets);
     }
 
-    public Tickets deleteTicket(Long userId, Long ticketId){
-        Users users = usersRepository.findByUserId(userId)
-                .orElseThrow(() -> new AccountDoesNotExistException("Account not found: " + userId));
-        Tickets tickets = (Tickets) ticketsRepository.getByTicketId();
-    }
+
 
 
 }
