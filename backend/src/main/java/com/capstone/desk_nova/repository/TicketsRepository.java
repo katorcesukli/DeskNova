@@ -12,8 +12,7 @@ import java.util.Optional;
 @Repository
 public interface TicketsRepository extends JpaRepository<Tickets, Long>{
 
-    List<Tickets> findByTicketId(Long ticketId);
-    List<Tickets> getByTicketId(Long ticketId);
+    Optional<Tickets> findById(Long ticketId);
     List<Tickets> findByStatus(String status);
     List<Tickets> findByClientId_Id(Long clientId);
 }
