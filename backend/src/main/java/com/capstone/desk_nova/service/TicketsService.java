@@ -28,13 +28,14 @@ public class TicketsService {
     }
 
     public List<Tickets> getTicketsById(Long id) {
-        return ticketsRepository.getByTicketId(id);
+        return ticketsRepository.getById(id);
     }
 
     public Tickets createTicket(Tickets ticket) {
         return ticketsRepository.save(ticket);
     }
 
+    //to be updated
     public Tickets updateTicket(Long id, Tickets ticketDetails) {
         Tickets ticket = (Tickets) getTicketsById(id);
         ticket.setTitle(ticketDetails.getTitle());
