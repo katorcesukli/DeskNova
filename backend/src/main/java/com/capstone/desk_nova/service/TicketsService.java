@@ -27,8 +27,8 @@ public class TicketsService {
         return ticketsRepository.findAll();
     }
 
-    public List<Tickets> getTicketsById(Long id) {
-        return ticketsRepository.getByTicketId(id);
+    public Tickets getTicketsById(Long id) {
+        return ticketsRepository.findById(id).orElseThrow(()-> new RuntimeException("error"));
     }
 
     public Tickets createTicket(Tickets ticket) {
