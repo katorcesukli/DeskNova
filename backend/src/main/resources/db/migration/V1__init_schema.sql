@@ -1,6 +1,6 @@
 CREATE TABLE users
 (
-    id         INT AUTO_INCREMENT PRIMARY KEY,
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     email      VARCHAR(255) NOT NULL UNIQUE,
     password   VARCHAR(255) NOT NULL,
     first_name VARCHAR(100) NOT NULL,
@@ -12,13 +12,13 @@ CREATE TABLE users
 
 CREATE TABLE tickets
 (
-    id          INT AUTO_INCREMENT PRIMARY KEY,
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
     title       VARCHAR(255) NOT NULL,
     description TEXT         NOT NULL,
-    client_id   INT          NOT NULL,
+    client_id   BIGINT          NOT NULL,
 
     -- set to nullable for possible admin ticket assignment
-    agent_id    INT NULL,
+    agent_id    BIGINT NULL,
 
     category    ENUM(
         'HARDWARE',
@@ -61,9 +61,9 @@ CREATE TABLE tickets
 
 CREATE TABLE ticket_comments
 (
-    id         INT AUTO_INCREMENT PRIMARY KEY,
-    ticket_id  INT      NOT NULL,
-    user_id    INT      NOT NULL,
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ticket_id  BIGINT      NOT NULL,
+    user_id    BIGINT      NOT NULL,
     comment    TEXT     NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
