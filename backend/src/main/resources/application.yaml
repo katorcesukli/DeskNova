@@ -1,15 +1,20 @@
-spring.application.name=desk_nova
 
 
+spring:
+  application:
+    name: desk-nova
 
-# MySQL Database Configuration
-spring.datasource.url=jdbc:mysql://localhost:3306/desk_nova?useSSL=false&serverTimezone=UTC
-spring.datasource.username=root
-spring.datasource.password=B0ch0g
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+  datasource:
+    url: jdbc:mysql://localhost:3306/desk_nova?useSSL=false&serverTimezone=UTC
+    username: root
+    password: B0ch0g
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-# JPA / Hibernate
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+  flyway:
+    baseline-on-migrate: true
+
