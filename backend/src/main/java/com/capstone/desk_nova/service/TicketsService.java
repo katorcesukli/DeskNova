@@ -35,6 +35,7 @@ public class TicketsService {
         return ticketsRepository.save(ticket);
     }
 
+    //to be updated
     public Tickets updateTicket(Long id, Tickets ticketDetails) {
         Tickets ticket = (Tickets) getTicketsById(id);
         ticket.setTitle(ticketDetails.getTitle());
