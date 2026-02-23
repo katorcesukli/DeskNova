@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,19 +27,28 @@ public class TicketsService {
         return ticketsRepository.findAll();
     }
 
-    public Optional<Tickets> getTicketsById(Long id) {
+    public List<Tickets> getTicketsById(Long id) {
         return ticketsRepository.getByTicketId(id);
     }
 
-    public Tickets createNewTicket(Tickets tickets, Long userId) {
-        Users users = usersRepository.findByUserId(userId)
-                .orElseThrow(() -> new AccountDoesNotExistException("Account not found: " + userId));
-        tickets.setTicketId(userId);
-        //set date
-        if (tickets.getAssignedAt() == null) {
-            tickets.setAssignedAt(LocalDate.now());
-        }
-        return ticketsRepository.save(tickets);
+    public Tickets createTicket(Tickets ticket) {
+        return ticketsRepository.save(ticket);
+    }
+
+    public Tickets updateTicket(Long id, Tickets ticketDetails) {
+        Tickets ticket = (Tickets) getTicketsById(id);
+        ticket.setTitle(ticketDetails.getTitle());
+        ticket.setDescription(ticketDetails.getDescription());
+        ticket.setPriority(ticketDetails.getPriority());
+        ticket.setStatus(ticketDetails.getStatus());
+        ticket.setCategory(ticketDetails.getCategory());
+        ticket.setUpdatedAt(ticketDetails.getUpdatedAt());
+
+        return ticketsRepository.save(ticket);
+    }
+
+    public void deleteTicket(Long id) {
+        ticketsRepository.deleteById(id);
     }
 
 
