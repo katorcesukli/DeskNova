@@ -1,10 +1,14 @@
 package com.capstone.desk_nova.service;
 
+import com.capstone.desk_nova.dto.auth.LoginRequest;
+import com.capstone.desk_nova.dto.auth.RegisterRequest;
 import com.capstone.desk_nova.model.Users;
 import com.capstone.desk_nova.model.enums.Roles;
 import com.capstone.desk_nova.repository.UsersRepository;
 import com.capstone.desk_nova.security.JwtUtil;
 
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,16 +30,21 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    public Map<String, Object> register(Users users) {
+    public Map<String, Object> register(RegisterRequest user) {
 
-        if (usersRepository.findByEmail(users.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+        if (usersRepository.findByEmail(user.email()).isPresent()) {
+            throw new DuplicateKeyException("Email already exists");
         }
 
-        users.setPassword(passwordEncoder.encode(users.getPassword()));
-        users.setRole(Roles.CLIENT);
+        Users newUser = new Users();
+        newUser.setFirstName(user.firstName());
+        newUser.setLastName(user.lastName());
+        newUser.setRole(Roles.CLIENT);
+        newUser.setEmail(user.email());
 
-        Users saved = usersRepository.save(users);
+        newUser.setPassword(passwordEncoder.encode(user.password()));
+
+        Users saved = usersRepository.save(newUser);
 
         String token = jwtUtil.generateToken(
                 saved.getFirstName(),
@@ -55,13 +64,13 @@ public class AuthService {
         );
     }
 
-    public Map<String, Object> login(String email, String password) {
+    public Map<String, Object> login(LoginRequest req) {
 
-        Users users = usersRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Invalid email"));
+        Users users = usersRepository.findByEmail(req.email())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        if (!passwordEncoder.matches(password, users.getPassword())) {
-            throw new RuntimeException("Invalid password");
+        if (!passwordEncoder.matches(req.password(), users.getPassword())) {
+            throw new SecurityException("Invalid password");
         }
 
         String token = jwtUtil.generateToken(
