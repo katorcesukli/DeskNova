@@ -11,5 +11,6 @@ import java.util.Optional;
 @Repository
 public interface TicketCommentsRepository extends JpaRepository<TicketComments, Long>{
 
+    List<TicketComments> findByCommentId(Long commentId);
 
 }
