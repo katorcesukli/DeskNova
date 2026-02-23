@@ -1,12 +1,16 @@
 package com.capstone.desk_nova.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.capstone.desk_nova.model.enums.TicketCategory;
+import com.capstone.desk_nova.model.enums.TicketPriority;
+import com.capstone.desk_nova.model.enums.TicketStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name ="tickets")
@@ -17,8 +21,7 @@ public class Tickets {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ticketId")
-    private Long ticketId;
+    private Long id;
 
     @Column(nullable = false)
     private String title;
@@ -27,35 +30,36 @@ public class Tickets {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "clientId", referencedColumnName = "userId")
-    @Column(nullable = false)
+    @JoinColumn(name = "client_id")
     private Users clientId;
 
     @ManyToOne
-    @JoinColumn(name = "agentId", referencedColumnName = "userId")
+    @JoinColumn(name = "agent_id")
+    private Users agentId;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Integer agentId;
+    private TicketCategory category;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String category;
+    private TicketStatus status;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private TicketPriority priority;
 
-    @Column(nullable = false)
-    private String priority;
+    @CreationTimestamp
+    @Column(name = "date_opened", nullable = false)
+    private LocalDateTime dateOpened;
 
-    @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate dateOpened;
+    @Column(name = "date_closed")
+    private LocalDateTime dateClosed;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate dateClosed;
+    @Column(name = "assigned_at")
+    private LocalDateTime assignedAt;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate assignedAt;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate updatedAt;
-
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

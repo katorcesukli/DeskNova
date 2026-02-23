@@ -1,40 +1,37 @@
 package com.capstone.desk_nova.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name ="comments")
+@Table(name ="ticket_comments")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class TicketComments {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long CommentId;
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name ="ticketId", referencedColumnName = "ticketId")
-    @Column(nullable = false)
-    private Integer ticketId;
+    @JoinColumn(name ="ticket_id")
+    private Tickets ticketId;
 
     @ManyToOne
-    @JoinColumn(name = "clientId", referencedColumnName = "userId")
-    @Column(nullable = false)
-    private Integer userId;
+    @JoinColumn(name = "user_id")
+    private Users userId;
 
     @Column(nullable = false)
     private String comment;
 
+    @CreationTimestamp
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
 }
