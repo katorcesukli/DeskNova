@@ -21,7 +21,7 @@ public class TicketComments {
 
     @ManyToOne
     @JoinColumn(name ="ticket_id")
-    private Tickets ticketId;
+    private Tickets ticket;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
