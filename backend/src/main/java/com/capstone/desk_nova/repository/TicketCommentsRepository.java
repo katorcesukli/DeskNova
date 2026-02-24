@@ -15,5 +15,6 @@ public interface TicketCommentsRepository extends JpaRepository<TicketComments, 
     List<TicketComments> getByTicketId(Long ticketId);
     List<TicketComments> findByUserId(Long userId);
     List<TicketComments> findByTicketId(Long ticketId);
+    List<TicketComments> findByTicketIdOrderByCreatedAtAsc(Long ticketId);
 
 }
