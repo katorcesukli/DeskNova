@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/comment")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class TicketCommentsController {
 
     @Autowired
