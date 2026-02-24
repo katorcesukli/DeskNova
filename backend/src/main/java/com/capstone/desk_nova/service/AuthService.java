@@ -70,6 +70,7 @@ public class AuthService {
             saved.getLastName(),
             saved.getEmail(),
             saved.getRole().name()
+          );
 
     }
 
