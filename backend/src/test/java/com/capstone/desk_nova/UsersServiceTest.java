@@ -91,7 +91,6 @@ public class UsersServiceTest {
         @Test
         @DisplayName("Should update user details and encode new password")
         void updateUser_Success() {
-            // Arrange
             Users updatedDetails = new Users();
             updatedDetails.setEmail("new@google.com");
             updatedDetails.setPassword("Password123");
@@ -100,10 +99,8 @@ public class UsersServiceTest {
             when(passwordEncoder.encode("Password123")).thenReturn("newEncodedPassword");
             when(usersRepository.save(any(Users.class))).thenReturn(testUser);
 
-            // Act
             Users result = usersService.updateUser("test@google.com", updatedDetails);
 
-            // Assert
             assertEquals("new@google.com", result.getEmail());
             assertEquals("newEncodedPassword", result.getPassword());
             verify(usersRepository).save(testUser);
@@ -117,23 +114,18 @@ public class UsersServiceTest {
         @Test
         @DisplayName("Should delete user when email exists")
         void deleteUser_Success() {
-            // Arrange
             when(usersRepository.existsByEmail("test@google.com")).thenReturn(true);
 
-            // Act
             usersService.deleteUser("test@google.com");
 
-            // Assert
             verify(usersRepository, times(1)).deleteByEmail("test@google.com");
         }
 
         @Test
         @DisplayName("Should throw exception when deleting non-existent user")
         void deleteUser_NotFound_ThrowsException() {
-            // Arrange
             when(usersRepository.existsByEmail("wrongemail@google.com")).thenReturn(false);
 
-            // Act & Assert
             assertThrows(RuntimeException.class, () -> usersService.deleteUser("wrongemail@google.com"));
         }
     }
