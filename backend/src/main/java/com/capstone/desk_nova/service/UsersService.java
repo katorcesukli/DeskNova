@@ -18,7 +18,7 @@ public class UsersService {
 
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService; // Injected to trigger welcome email
+    private final EmailService emailService;
 
     public List<Users> getAllUsers() {
         return usersRepository.findAll();
@@ -41,7 +41,6 @@ public class UsersService {
         try {
             emailService.sendWelcomeEmail(savedUser);
         } catch (Exception e) {
-            // Log error but don't stop the user creation process
             System.err.println("Failed to send welcome email: " + e.getMessage());
         }
 

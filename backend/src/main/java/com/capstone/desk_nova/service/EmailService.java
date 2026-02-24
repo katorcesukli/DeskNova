@@ -1,9 +1,10 @@
 package com.capstone.desk_nova.service;
 
 import com.capstone.desk_nova.model.Users;
+import jakarta.mail.Address;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,6 +12,9 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     private final JavaMailSender mailSender;
+
+    private static final String TOKEN = "8bd4d4cff9df4fcd14ad043732b42438";
+
     public void sendWelcomeEmail(Users user) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
@@ -18,6 +22,17 @@ public class EmailService {
         message.setText("Hello " + user.getFirstName() + ",\n\n" +
                 "Your account has been created successfully. You can now log in and manage your support tickets."
                 );
+
+        mailSender.send(message);
+    }
+
+    public void sendTestEmail(Users user) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo("Test@gmail.com");
+        message.setSubject("Welcome to Desk Nova!");
+        message.setText("Hello " + user.getFirstName() + ",\n\n" +
+                "Your account has been created successfully. You can now log in and manage your support tickets."
+        );
 
         mailSender.send(message);
     }
