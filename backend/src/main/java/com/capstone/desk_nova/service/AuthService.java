@@ -30,7 +30,7 @@ public class AuthService {
         this.usersRepository = usersRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
-        this.emailService = emailService;
+        this.emailService = emailService; //email test
     }
 
     public Map<String, Object> register(RegisterRequest user) {
@@ -55,7 +55,7 @@ public class AuthService {
                 saved.getEmail(),
                 saved.getRole().name()
         );
-
+        //email test block
         try {
             emailService.sendWelcomeEmail(saved);
         } catch (Exception e) {

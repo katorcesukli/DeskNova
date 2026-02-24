@@ -1,1 +1,69 @@
-admin page
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DeskNova | Admin Management</title>
+</head>
+<body>
+
+<h1>DeskNova User Management</h1>
+
+<button type="button" onclick="openCreateModal()">Add New User</button>
+
+<hr>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Last Updated</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="userTableBody">
+    </tbody>
+</table>
+
+<hr>
+
+<div id="userModal">
+    <h3 id="modalTitle">Add User</h3>
+    <form id="userForm">
+        <input type="hidden" id="isEditMode" value="false">
+        <input type="hidden" id="originalEmail">
+
+        <div>
+            <label>First Name:</label>
+            <input type="text" id="firstName" required>
+        </div>
+        <div>
+            <label>Last Name:</label>
+            <input type="text" id="lastName" required>
+        </div>
+        <div>
+            <label>Email:</label>
+            <input type="email" id="email" required>
+        </div>
+        <div>
+            <label>Password:</label>
+            <input type="password" id="password" placeholder="New password">
+        </div>
+        <div>
+            <label>Role:</label>
+            <select id="role">
+                <option value="CLIENT">CLIENT</option>
+                <option value="AGENT">AGENT</option>
+                <option value="ADMIN">ADMIN</option>
+            </select>
+        </div>
+        <br>
+        <button type="submit">Save User</button>
+        <button type="button" onclick="document.getElementById('userModal').style.display='none'">Cancel</button>
+    </form>
+</div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>
