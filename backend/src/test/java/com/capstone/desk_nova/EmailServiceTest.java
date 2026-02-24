@@ -59,17 +59,13 @@ public class EmailServiceTest {
     @Test
     @DisplayName("Should construct and send the correct welcome email message")
     void sendWelcomeEmail_ShouldSendCorrectDetails() {
-        // Arrange: ArgumentCaptor allows us to "grab" the message passed to mailSender.send()
         ArgumentCaptor<SimpleMailMessage> messageCaptor = ArgumentCaptor.forClass(SimpleMailMessage.class);
 
-        // Act
         emailService.sendWelcomeEmail(testUser);
 
-        // Assert: Verify mailSender.send was called and capture the argument
         verify(mailSender).send(messageCaptor.capture());
         SimpleMailMessage sentMessage = messageCaptor.getValue();
 
-        // Validate the fields of the captured message
         assertEquals("mail.dexnova.noreply", sentMessage.getFrom());
         assertEquals("test@gmail.com", Objects.requireNonNull(sentMessage.getTo())[0]);
         assertEquals("Welcome to Desk Nova!", sentMessage.getSubject());
