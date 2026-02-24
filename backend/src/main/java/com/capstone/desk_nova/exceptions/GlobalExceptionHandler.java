@@ -1,6 +1,6 @@
 package com.capstone.desk_nova.exceptions;
 
-import com.capstone.desk_nova.dto.ErrorResponse;
+import com.capstone.desk_nova.dto.error.ErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
                         HttpStatus.NOT_FOUND.value(),
                         HttpStatus.NOT_FOUND.getReasonPhrase(),
                         e.getMessage(),
-                        req.getDescription(false)
+                        req.getDescription(false).replace("uri=", "")
                 )
         );
     }

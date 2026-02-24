@@ -1,4 +1,4 @@
-package com.capstone.desk_nova.dto;
+package com.capstone.desk_nova.dto.error;
 
 import java.time.LocalDateTime;
 
