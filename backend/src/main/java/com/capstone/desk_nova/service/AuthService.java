@@ -6,6 +6,7 @@ import com.capstone.desk_nova.model.Users;
 import com.capstone.desk_nova.model.enums.Roles;
 import com.capstone.desk_nova.repository.UsersRepository;
 import com.capstone.desk_nova.security.JwtUtil;
+import com.capstone.desk_nova.service.EmailService;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DuplicateKeyException;
@@ -20,14 +21,16 @@ public class AuthService {
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final EmailService emailService;
 
     public AuthService(UsersRepository usersRepository,
                        PasswordEncoder passwordEncoder,
-                       JwtUtil jwtUtil) {
+                       JwtUtil jwtUtil, EmailService emailService) {
 
         this.usersRepository = usersRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.emailService = emailService;
     }
 
     public Map<String, Object> register(RegisterRequest user) {
@@ -53,6 +56,11 @@ public class AuthService {
                 saved.getRole().name()
         );
 
+        try {
+            emailService.sendWelcomeEmail(saved);
+        } catch (Exception e) {
+            System.err.println("Failed to send welcome email: " + e.getMessage());
+        }
 
         return Map.of(
                 "token", token,
