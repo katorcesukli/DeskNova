@@ -3,11 +3,13 @@ package com.capstone.desk_nova.service;
 import com.capstone.desk_nova.model.Tickets;
 import com.capstone.desk_nova.model.Users;
 import com.capstone.desk_nova.repository.UsersRepository;
+import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,4 +48,31 @@ public class UsersService {
 
         return savedUser;
     }
+    //ADMIN CRUD METHODS BLOCK
+    @Transactional
+    public Users updateUser(String email, Users updateDetails) {
+        return usersRepository.findByEmail(email).map(user -> {
+            user.setEmail(updateDetails.getEmail());
+            user.setFirstName(updateDetails.getFirstName());
+            user.setLastName(updateDetails.getLastName());
+            user.setRole(updateDetails.getRole());
+            user.setUpdatedAt(java.time.LocalDateTime.now()); // Set the timestamp
+
+            // Only update password if a new one is provided
+            if (updateDetails.getPassword() != null && !updateDetails.getPassword().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(updateDetails.getPassword()));
+            }
+
+            return usersRepository.save(user);
+        }).orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+    }
+
+    @Transactional
+    public void deleteUser(String email) {
+        if (!usersRepository.existsByEmail(email)) {
+            throw new RuntimeException("Cannot delete. User not found with email: " + email);
+        }
+        usersRepository.deleteByEmail(email);
+    }
+    //END OF ADMIN CRUD METHOD BLOCK
 }
