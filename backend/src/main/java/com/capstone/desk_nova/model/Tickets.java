@@ -1,7 +1,6 @@
 package com.capstone.desk_nova.model;
 
 import com.capstone.desk_nova.model.enums.TicketCategory;
-import com.capstone.desk_nova.model.enums.TicketPriority;
 import com.capstone.desk_nova.model.enums.TicketStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name ="tickets")
@@ -31,11 +31,11 @@ public class Tickets {
 
     @ManyToOne
     @JoinColumn(name = "client_id")
-    private Users clientId;
+    private Users client;
 
     @ManyToOne
     @JoinColumn(name = "agent_id")
-    private Users agentId;
+    private Users agent;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -45,8 +45,8 @@ public class Tickets {
     @Column(nullable = false)
     private TicketStatus status;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @OneToOne
+    @JoinColumn(name = "priority_id")
     private TicketPriority priority;
 
     @CreationTimestamp
@@ -62,4 +62,7 @@ public class Tickets {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "ticket")
+    private List<TicketComments> comments;
 }
