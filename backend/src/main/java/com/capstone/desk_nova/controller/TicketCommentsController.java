@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/comment")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class TicketCommentsController {
 
     private TicketCommentsService ticketCommentsService;
