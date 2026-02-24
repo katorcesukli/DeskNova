@@ -56,7 +56,7 @@ public class UsersService {
             user.setFirstName(updateDetails.getFirstName());
             user.setLastName(updateDetails.getLastName());
             user.setRole(updateDetails.getRole());
-            user.setUpdatedAt(java.time.LocalDateTime.now()); // Set the timestamp
+            user.setUpdatedAt(java.time.LocalDateTime.now());
 
             // Only update password if a new one is provided
             if (updateDetails.getPassword() != null && !updateDetails.getPassword().isEmpty()) {
@@ -75,4 +75,9 @@ public class UsersService {
         usersRepository.deleteByEmail(email);
     }
     //END OF ADMIN CRUD METHOD BLOCK
+
+    //ADMIN TICKET METRICS AND MANAGEMENT BLOCK
+
+
+    //END OF ADMIN TICKET METRICS AND MANAGEMENT BLOCK
 }
