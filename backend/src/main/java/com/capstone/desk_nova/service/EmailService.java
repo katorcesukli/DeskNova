@@ -15,8 +15,10 @@ public class EmailService {
 
     private static final String TOKEN = "8bd4d4cff9df4fcd14ad043732b42438";
 
+    //upon registration, send a notif email
     public void sendWelcomeEmail(Users user) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("mail.dexnova.noreply");
         message.setTo(user.getEmail());
         message.setSubject("Welcome to Desk Nova!");
         message.setText("Hello " + user.getFirstName() + ",\n\n" +
@@ -28,6 +30,7 @@ public class EmailService {
 
     public void sendTestEmail(Users user) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("mail.dexnova.noreply");
         message.setTo("Test@gmail.com");
         message.setSubject("Welcome to Desk Nova!");
         message.setText("Hello " + user.getFirstName() + ",\n\n" +
