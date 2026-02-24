@@ -1,32 +1,35 @@
 package com.capstone.desk_nova.controller;
 
-import com.capstone.desk_nova.model.TicketComments;
+import com.capstone.desk_nova.dto.ticket.TicketCommentRequest;
 import com.capstone.desk_nova.service.TicketCommentsService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/comment")
 @CrossOrigin(origins = "*")
 public class TicketCommentsController {
 
+    @Autowired
     private TicketCommentsService ticketCommentsService;
 
-    @GetMapping("/{ticketId}")
-    public ResponseEntity<List<TicketComments>> getCommentsByTicket(@PathVariable Long ticketId) {
-        return ResponseEntity.ok(ticketCommentsService.getCommentsByTicket(ticketId));
+    @PostMapping("/create")
+    public ResponseEntity<Long> addComment(@Valid @RequestBody TicketCommentRequest req) {
+        return ResponseEntity.ok(ticketCommentsService.addComment(req));
     }
 
-    @PostMapping
-    public ResponseEntity<TicketComments> addComment(@RequestBody TicketComments comment) {
-        return ResponseEntity.ok(ticketCommentsService.addComment(comment));
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<Long> editComment(
+            @PathVariable Long id,
+            @Valid @RequestBody TicketCommentRequest req) {
+        return ResponseEntity.ok(ticketCommentsService.editTaskComment(id, req));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteComment(@PathVariable Long id) {
         ticketCommentsService.deleteComment(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Successfully deleted comment");
     }
 }
