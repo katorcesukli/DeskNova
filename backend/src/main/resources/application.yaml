@@ -18,9 +18,10 @@ spring:
 
   #email properties
   mail:
-    #host: smtp.office365.com
-    host: sandbox.smtp.mailtrap.io
-    port: 2525
+    host: smtp.office365.com
+    #host: sandbox.smtp.mailtrap.io
+    port: 587
+    #587 2525
     username: f8149413ba1420
     password: 79f6e744f15c04
     properties:
