@@ -15,7 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import tools.jackson.databind.ObjectMapper;
+//import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 
@@ -49,17 +50,22 @@ public class SpringSecurityConfig {
                 // Enable CORS
                 .cors(cors -> {})
 
+                .authenticationProvider(authProvider)
+
                 // Allow all requests
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/", "/index.html", "/admin.html","/login.html", "/register.html").permitAll()
-                        .requestMatchers("/css/**", "/js/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/auth/**").permitAll().requestMatchers("/", "/index.html", "/admin.html","/login.html", "/register.html","/client.html").permitAll()
 
+                        .requestMatchers("/css/**", "/js/**").permitAll()
+
+
+                        // Secure endpoints
+                        .requestMatchers("/api/**").authenticated()
+                        .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(((request, response, exDenide) -> {
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                             response.setContentType("application/json");
                             response.setCharacterEncoding("UTF-8");
                             ErrorResponse<String> error = new ErrorResponse<>(

@@ -146,22 +146,31 @@ public class TicketsService {
 
         Users currentUser = this.authService.getCurrentAuthenticatedUser();
 
+        Roles role = currentUser.getRole();
+
         // check if the current user is either a 'CLIENT' and the one who created the ticket
         // or current user is an ADMIN
-        if(
-            (currentUser.getRole().equals(Roles.CLIENT) &&
-            !currentUser.getId().equals(ticket.getClient().getId()))
-            || currentUser.getRole().equals(Roles.ADMIN)
-        )
-        {
-            throw new AccessDeniedException("Unauthorized to edit this ticket");
+        if (role == Roles.CLIENT &&
+                !currentUser.getId().equals(ticket.getClient().getId())) {
+
+            throw new AccessDeniedException(
+                    "You can only modify your own tickets");
         }
 
-        ticket.setStatus(TicketStatus.valueOf(status));
+        // AGENT can only modify assigned tickets
+        if (role == Roles.AGENT &&
+                (ticket.getAgent() == null ||
+                        !ticket.getAgent().getId().equals(currentUser.getId()))) {
+
+            throw new AccessDeniedException(
+                    "You can only modify tickets assigned to you");
+        }
+
+//        ticket.setStatus(TicketStatus.valueOf(status));
         TicketStatus currentStatus = ticket.getStatus();
         TicketStatus newStatus = TicketStatus.valueOf(status);
 
-        Roles role = currentUser.getRole();
+//        Roles role = currentUser.getRole();
 
         // validate transition
         if (!isTransitionAllowed(role, currentStatus, newStatus)) {
@@ -170,10 +179,13 @@ public class TicketsService {
                             + currentStatus + " to " + newStatus);
         }
 
-        ticket.setStatus(TicketStatus.valueOf(status));
+        ticket.setStatus(newStatus);
         ticket.setUpdatedAt(LocalDateTime.now());
 
-        // client can only update status to CLOSED
+        //update date and time after status change
+        if (newStatus == TicketStatus.RESOLVED) {
+            ticket.setDateResolved(LocalDateTime.now());
+        }
         if (newStatus == TicketStatus.CLOSED) {
             ticket.setDateClosed(LocalDateTime.now());
         }
@@ -203,6 +215,11 @@ public class TicketsService {
     }
 
     private boolean isTransitionAllowed(Roles role, TicketStatus current, TicketStatus next) {
+
+        // prevent same status update
+        if (current == next) {
+            return false;
+        }
 
         return switch (role) {
             case AGENT -> switch (current) {

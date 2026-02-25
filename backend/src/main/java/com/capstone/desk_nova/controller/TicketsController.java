@@ -51,7 +51,7 @@ public class TicketsController {
     }
 
     @PutMapping("/edit/status/{id}")
-    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('CLIENT')")
     public ResponseEntity<String> editStatus(@PathVariable Long id, @RequestBody EditStatusRequest req){
         Long editStatus = ticketsService.editStatus(id, req.status());
         return ResponseEntity.ok(editStatus + " " + "Changed status successfully");

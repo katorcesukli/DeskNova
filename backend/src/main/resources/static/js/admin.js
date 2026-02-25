@@ -12,9 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // READ: Fetch all users
 async function fetchUsers() {
     try {
-        console.log("Attempting to fetch users from:", API_URL);
-        //const response = await fetch(API_URL);
-        //getter for token
         const token = localStorage.getItem("jwtToken"); // get token
 
         const response = await fetch(API_URL, {
@@ -23,7 +20,7 @@ async function fetchUsers() {
                 "Content-Type": "application/json"
             }
         });
-        //getter for token end
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -77,15 +74,16 @@ userForm.addEventListener('submit', async (e) => {
     const method = isEdit ? 'PUT' : 'POST';
 
     try {
+        const token = localStorage.getItem("jwtToken");
         const response = await fetch(url, {
             method: method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${token}` },
             body: JSON.stringify(userData)
         });
 
         if (response.ok) {
             userModalContainer.style.display = 'none';
-            fetchUsers();
+            await fetchUsers();
             userForm.reset();
         } else {
             const err = await response.json();
@@ -98,9 +96,20 @@ userForm.addEventListener('submit', async (e) => {
 
 // DELETE
 async function deleteUser(email) {
+    const userData = {
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        role: document.getElementById('role').value
+    };
     if (confirm(`Are you sure you want to delete ${email}?`)) {
         try {
-            const response = await fetch(`${API_URL}/admin/${email}`, { method: 'DELETE' });
+            const token = localStorage.getItem("jwtToken");
+            const response = await fetch(`${API_URL}/admin/${email}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${token}` },
+                body: JSON.stringify(userData)});
             if (response.ok) {
                 fetchUsers();
             } else {
@@ -146,20 +155,15 @@ userModalContainer.style.display = 'none';
 
 async function fetchMetrics() {
   try {
-      //const response = await fetch(METRIC_URL);
-      //const data = await response.json();
-
       const token = localStorage.getItem("jwtToken"); // get token
 
-              const response = await fetch(METRIC_URL, {
-                  headers: {
-                      "Authorization": `Bearer ${token}`,
-                      "Content-Type": "application/json"
-                  }
-              });
+      const response = await fetch(METRIC_URL, {
+          headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+          }
+      });
       const data = await response.json();
-
-
       //refer to metric service return
       const metricsContent = document.getElementById('metricsContent');
 
