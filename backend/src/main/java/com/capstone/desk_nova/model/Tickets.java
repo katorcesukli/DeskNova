@@ -59,6 +59,9 @@ public class Tickets {
     @Column(name = "assigned_at")
     private LocalDateTime assignedAt;
 
+    @Column(name = "date_resolved")
+    private LocalDateTime dateResolved;
+
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;

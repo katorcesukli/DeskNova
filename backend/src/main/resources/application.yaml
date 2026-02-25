@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/desk_nova?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
-    password: book1234
+    password: B0ch0g
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -18,9 +18,9 @@ spring:
 
   #email properties
   mail:
-    host: smtp.office365.com
-    #host: sandbox.smtp.mailtrap.io
-    port: 587
+    #host: smtp.office365.com
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
     #587 2525
     username: f8149413ba1420
     password: 79f6e744f15c04
