@@ -1,4 +1,10 @@
 package com.capstone.desk_nova.dto.ticket;
 
-public record EditStatusRequest(String status) {}
+import jakarta.validation.constraints.NotBlank;
+
+public record EditStatusRequest(
+        @NotBlank(message = "Status ID is required")
+        String status
+
+) {}
 
