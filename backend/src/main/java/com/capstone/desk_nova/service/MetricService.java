@@ -27,11 +27,11 @@ public class MetricService {
 
         //ave resolution time in minutes
         List<Tickets> closedTickets = allTickets.stream()
-                .filter(t -> t.getStatus() == TicketStatus.RESOLVED && t.getDateClosed() != null)
+                .filter(t -> t.getStatus() == TicketStatus.RESOLVED && t.getDateResolved() != null)
                 .toList();
 
         double avgResolutionTime = closedTickets.stream()
-                .mapToLong(t -> Duration.between(t.getDateOpened(), t.getDateClosed()).toMinutes())
+                .mapToLong(t -> Duration.between(t.getDateOpened(), t.getDateResolved()).toMinutes())
                 .average()
                 .orElse(0.0);
 
@@ -50,7 +50,7 @@ public class MetricService {
                 .filter(t -> t.getAgent() != null)
                 .collect(Collectors.groupingBy(
                         t -> t.getAgent().getFullName(),
-                        Collectors.averagingLong(t -> Duration.between(t.getDateOpened(), t.getDateClosed()).toMinutes())
+                        Collectors.averagingLong(t -> Duration.between(t.getDateOpened(), t.getDateResolved()).toMinutes())
                 ));
 
         //getAveResolvePerPriority put here
@@ -77,16 +77,16 @@ public class MetricService {
         return allTickets.stream()
                 //filter for resolved tickets with valid dates
                 .filter(t -> t.getStatus() != null && t.getStatus().name().equalsIgnoreCase("RESOLVED"))
-                .filter(t -> t.getDateOpened() != null && t.getDateClosed() != null)
+                .filter(t -> t.getDateOpened() != null && t.getDateResolved() != null)
                 //filter for != priority
                 .filter(t -> t.getPriority() != null)
                 //filter by priority status and month
                 .collect(Collectors.groupingBy(
-                        t -> t.getDateClosed().format(monthFormatter),
+                        t -> t.getDateResolved().format(monthFormatter),
                         Collectors.groupingBy(
                         t -> t.getPriority().getName(),
                         Collectors.averagingLong(t ->
-                                Duration.between(t.getDateOpened(), t.getDateClosed()).toMinutes()
+                                Duration.between(t.getDateOpened(), t.getDateResolved()).toMinutes()
                         )
                 )));
     }
