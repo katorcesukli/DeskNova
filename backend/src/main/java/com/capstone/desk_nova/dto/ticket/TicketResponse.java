@@ -1,11 +1,12 @@
 package com.capstone.desk_nova.dto.ticket;
 
 import com.capstone.desk_nova.dto.person.PersonResponse;
+import com.capstone.desk_nova.model.Tickets;
 import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.Null;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public record TicketResponse(
         Long id,
@@ -22,4 +23,28 @@ public record TicketResponse(
         LocalDateTime dateClosed,
         LocalDateTime assignedAt,
         LocalDateTime updatedAt
-) {}
+) {
+
+        public static TicketResponse from(Tickets t) {
+                return new TicketResponse(
+                        t.getId(),
+                        t.getTitle(),
+                        t.getDescription(),
+                        t.getCategory().name(),
+                        t.getStatus().name(),
+                        t.getPriority().getName(),
+                        PersonResponse.from(t.getClient()),
+                        Optional.ofNullable(t.getAgent()).map(PersonResponse::from).orElse(null),
+                        t.getComments().stream().map(c -> new TicketCommentResponse(
+                                c.getId(),
+                                new PersonResponse(c.getUserId().getFullName(), c.getUserId().getEmail()),
+                                c.getComment(),
+                                c.getCreatedAt()
+                        )).toList(),
+                        t.getDateOpened(),
+                        t.getDateClosed(),
+                        t.getAssignedAt(),
+                        t.getUpdatedAt()
+                );
+        }
+}

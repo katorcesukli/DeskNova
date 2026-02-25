@@ -1,7 +1,6 @@
 package com.capstone.desk_nova.service;
 
 import com.capstone.desk_nova.dto.pagination.PaginatedResponse;
-import com.capstone.desk_nova.dto.person.PersonResponse;
 import com.capstone.desk_nova.dto.ticket.*;
 import com.capstone.desk_nova.model.TicketPriority;
 import com.capstone.desk_nova.model.Tickets;
@@ -44,30 +43,9 @@ public class TicketsService {
             case CLIENT ->  this.ticketsRepository.findByClient_Id(currentUser.getId(), pageable);
         };
 
-
-        List<TicketResponse> tickets = pagedTickets.getContent().stream()
-                .map(t -> new TicketResponse(
-                        t.getId(),
-                        t.getTitle(),
-                        t.getDescription(),
-                        t.getCategory().name(),
-                        t.getStatus().name(),
-                        t.getPriority().getName(),
-                        PersonResponse.from(t.getClient()),
-
-                        // handle tickets with no assigned agents
-                        Optional.ofNullable(t.getAgent()).map(PersonResponse::from).orElse(null),
-                        t.getComments().stream().map(c -> new TicketCommentResponse(
-                                c.getId(),
-                                new PersonResponse(c.getUserId().getFullName(), c.getUserId().getEmail()),
-                                c.getComment(),
-                                c.getCreatedAt()
-                        )).toList(),
-                        t.getDateOpened(),
-                        t.getDateClosed(),
-                        t.getAssignedAt(),
-                        t.getUpdatedAt()
-                )).toList();
+        List<TicketResponse> tickets = pagedTickets.getContent()
+                .stream()
+                .map(TicketResponse::from).toList();
 
         return new PaginatedResponse<>(
                 tickets,
@@ -87,7 +65,7 @@ public class TicketsService {
         // [CONSIDER] create fetch methods for each role to have more control in handling exceptions
         // e.g. differentiate "Ticket not found", "Ticket not assigned", and "Agent not found"
 
-        Tickets t =  switch (currentUser.getRole()) {
+        Tickets ticket =  switch (currentUser.getRole()) {
             case ADMIN -> this.ticketsRepository.findById(ticketId)
                     .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
             case AGENT -> this.ticketsRepository.findByIdAndAgent_Id(ticketId, currentUser.getId())
@@ -96,26 +74,7 @@ public class TicketsService {
                     .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
         };
 
-        return new TicketResponse(
-            t.getId(),
-            t.getTitle(),
-            t.getDescription(),
-            t.getCategory().name(),
-            t.getStatus().name(),
-            t.getPriority().getName(),
-            PersonResponse.from(t.getClient()),
-            Optional.ofNullable(t.getAgent()).map(PersonResponse::from).orElse(null),
-            t.getComments().stream().map(c -> new TicketCommentResponse(
-                    c.getId(),
-                    new PersonResponse(c.getUserId().getFullName(), c.getUserId().getEmail()),
-                    c.getComment(),
-                    c.getCreatedAt()
-            )).toList(),
-            t.getDateOpened(),
-            t.getDateClosed(),
-            t.getAssignedAt(),
-            t.getUpdatedAt()
-        );
+        return TicketResponse.from(ticket);
     }
 
     public Tickets assignTicket(Tickets ticket) {
@@ -134,10 +93,6 @@ public class TicketsService {
         ticket.setAssignedAt(LocalDateTime.now());
 
         return ticket;
-    }
-
-    public List<AgentWorkloadResponse> getAgentWorkload() {
-        return this.ticketsRepository.getAgentWorkloads();
     }
 
     @Transactional
@@ -178,7 +133,6 @@ public class TicketsService {
 
         ticket.setTitle(req.title());
         ticket.setDescription(req.description());
-//        ticket.setStatus(TicketStatus.valueOf(req.status()));
         ticket.setCategory(TicketCategory.valueOf(req.category()));
         ticket.setUpdatedAt(LocalDateTime.now());
 
@@ -211,26 +165,21 @@ public class TicketsService {
 
         // validate transition
         if (!isTransitionAllowed(role, currentStatus, newStatus)) {
-            throw new RuntimeException(
+            throw new AccessDeniedException(
                     "Role " + role + " cannot change ticket from "
                             + currentStatus + " to " + newStatus);
         }
 
-        ticket.setStatus(newStatus);
+        ticket.setStatus(TicketStatus.valueOf(status));
         ticket.setUpdatedAt(LocalDateTime.now());
 
-        //set closed date
-
+        // client can only update status to CLOSED
         if (newStatus == TicketStatus.CLOSED) {
             ticket.setDateClosed(LocalDateTime.now());
         }
 
-
-//        ticket.setStatus(TicketStatus.valueOf(status));
         return ticketsRepository.save(ticket).getId();
     }
-
-
 
     public void deleteTicket(Long ticketId) {
         Tickets ticket = this.ticketsRepository.findById(ticketId).orElseThrow(
@@ -269,9 +218,7 @@ public class TicketsService {
             };
             case CLIENT -> switch (current) {
 
-                case OPEN -> next == TicketStatus.CLOSED;
-
-                case IN_PROGRESS -> next == TicketStatus.CLOSED;
+                case OPEN, IN_PROGRESS -> next == TicketStatus.CLOSED;
 
                 case RESOLVED -> next == TicketStatus.CLOSED ||
                         next == TicketStatus.OPEN;
@@ -279,11 +226,6 @@ public class TicketsService {
                 case CLOSED -> next == TicketStatus.OPEN;
             };
             case ADMIN -> true;
-            default -> false;
         };
     }
-
-
-
-
 }

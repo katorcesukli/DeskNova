@@ -11,9 +11,6 @@ public record EditTicketRequest(
         @NotBlank(message = "Description is required")
         String description,
 
-        @NotBlank(message = "Status is required")
-        String status,
-
         @NotBlank(message = "Ticket category is required")
         String category
 ) {}
