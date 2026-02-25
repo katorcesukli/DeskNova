@@ -1,6 +1,7 @@
 package com.capstone.desk_nova.controller;
 
 
+import com.capstone.desk_nova.dto.auth.AuthMeResponse;
 import com.capstone.desk_nova.dto.auth.AuthResponse;
 import com.capstone.desk_nova.dto.auth.LoginRequest;
 import com.capstone.desk_nova.dto.auth.RegisterRequest;
@@ -35,7 +36,9 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Users> me() {
-        return ResponseEntity.ok(authService.getCurrentAuthenticatedUser());
+    public ResponseEntity<AuthMeResponse> me() {
+        Users user = authService.getCurrentAuthenticatedUser();
+        var response = new AuthMeResponse(user.getEmail(), user.getRole().name(), true);
+        return ResponseEntity.ok(response);
     }
 }

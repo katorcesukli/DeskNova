@@ -7,7 +7,6 @@ import com.capstone.desk_nova.model.Users;
 import com.capstone.desk_nova.model.enums.Roles;
 import com.capstone.desk_nova.repository.UsersRepository;
 import com.capstone.desk_nova.security.JwtUtil;
-import com.capstone.desk_nova.service.EmailService;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DuplicateKeyException;
@@ -63,16 +62,8 @@ public class AuthService {
         } catch (Exception e) {
             System.err.println("Failed to send welcome email: " + e.getMessage());
         }
-          
-          return new AuthResponse(
-            token,
-            saved.getId(),
-            saved.getFirstName(),
-            saved.getLastName(),
-            saved.getEmail(),
-            saved.getRole().name()
-          );
 
+        return AuthResponse.from(token, saved);
     }
 
     public AuthResponse login(LoginRequest req) {
@@ -91,14 +82,7 @@ public class AuthService {
                 users.getRole().name()
         );
 
-        return new AuthResponse(
-                token,
-                users.getId(),
-                users.getFirstName(),
-                users.getLastName(),
-                users.getEmail(),
-                users.getRole().name()
-        );
+        return AuthResponse.from(token, users);
     }
 
     public Users getCurrentAuthenticatedUser(){
