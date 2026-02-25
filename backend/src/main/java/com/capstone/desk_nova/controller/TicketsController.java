@@ -1,10 +1,7 @@
 package com.capstone.desk_nova.controller;
 
 import com.capstone.desk_nova.dto.pagination.PaginatedResponse;
-import com.capstone.desk_nova.dto.ticket.AgentWorkloadResponse;
-import com.capstone.desk_nova.dto.ticket.CreateTicketRequest;
-import com.capstone.desk_nova.dto.ticket.EditTicketRequest;
-import com.capstone.desk_nova.dto.ticket.TicketResponse;
+import com.capstone.desk_nova.dto.ticket.*;
 import com.capstone.desk_nova.service.TicketsService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/ticket")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class TicketsController {
 
     @Autowired
@@ -32,11 +29,11 @@ public class TicketsController {
         return ResponseEntity.ok(this.ticketsService.getAllTickets(PageRequest.of(page, pageSize, Sort.by("dateOpened"))));
     }
 
-    @GetMapping("/{id}")
-//    @PreAuthorize("hasAuthority('CLIENT', 'AGENT', 'ADMIN')")
-    public ResponseEntity<TicketResponse> getTicketById(@PathVariable Long id) {
-        return ResponseEntity.ok(ticketsService.getTicketById(id));
-    }
+        @GetMapping("/{id}")
+    //    @PreAuthorize("hasAuthority('CLIENT', 'AGENT', 'ADMIN')")
+        public ResponseEntity<TicketResponse> getTicketById(@PathVariable Long id) {
+            return ResponseEntity.ok(ticketsService.getTicketById(id));
+        }
 
     @PostMapping("/create")
     public ResponseEntity<String> createTicket(@Valid @RequestBody CreateTicketRequest ticket) {
@@ -48,6 +45,12 @@ public class TicketsController {
             @PathVariable Long id,
             @Valid @RequestBody EditTicketRequest req) {
         return ResponseEntity.ok(ticketsService.editTicket(id, req) + " " + "Successfully edited ticket details");
+    }
+
+    @PutMapping("/edit/status/{id}")
+    public ResponseEntity<String> editStatus(@PathVariable Long id, @RequestBody EditStatusRequest req){
+        Long editStatus = ticketsService.editStatus(id, req.status());
+        return ResponseEntity.ok(editStatus + " " + "Changed status successfully");
     }
 
     @DeleteMapping("/delete/{id}")

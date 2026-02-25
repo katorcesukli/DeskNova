@@ -13,7 +13,7 @@ import java.util.Date;
 public class JwtUtil {
 
 //    private final String SECRET =
-//            "mySecretKeymySecretKeymySecretKey"; // minimum 32 chars
+//            "mySecretKeymySecretKeymySecretKey";
 
     private final Key key;
     private final long expiration;

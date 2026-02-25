@@ -193,6 +193,16 @@ public class TicketsService {
         return ticketsRepository.save(ticket).getId();
     }
 
+    public Long editStatus(Long ticketId, String status ){
+        Tickets ticket = this.ticketsRepository.findById(ticketId).orElseThrow(
+                () -> new EntityNotFoundException("Ticket not found with id: " + ticketId));
+
+        ticket.setStatus(TicketStatus.valueOf(status));
+
+        return ticketsRepository.save(ticket).getId();
+
+    }
+
     public void deleteTicket(Long ticketId) {
         if(!this.ticketsRepository.existsById(ticketId)) {
             throw new EntityNotFoundException("Ticket not found");
