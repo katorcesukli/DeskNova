@@ -33,6 +33,7 @@ public class TicketsService {
     private final UsersRepository usersRepository;
     private final AuthService authService;
     private final TicketPriorityRepository ticketPriorityRepository;
+    private final EmailService emailService; //for testing
 
     public PaginatedResponse<TicketResponse> getAllTickets(Pageable pageable) {
         Users currentUser = authService.getCurrentAuthenticatedUser();
@@ -110,6 +111,19 @@ public class TicketsService {
         newTicket.setPriority(priority);
         newTicket.setCategory(TicketCategory.valueOf(req.category()));
         newTicket.setClient(currentUser);
+
+        //upon creattion sends a notif to agent
+        Tickets savedTicket = this.ticketsRepository.save(assignTicket(newTicket));
+
+        if (savedTicket.getAgent() != null) {
+            try {
+                emailService.sendTicketAssignmentEmail(savedTicket.getAgent(), savedTicket);
+            } catch (Exception e) {
+                // Log error but don't fail ticket creation if email fails
+                System.err.println("Failed to send assignment email: " + e.getMessage());
+            }
+        }
+        //email block ends here
 
         // try and assign ticket to the agent with the lowest workload
         return this.ticketsRepository.save(assignTicket(newTicket)).getId();

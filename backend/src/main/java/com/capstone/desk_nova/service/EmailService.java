@@ -1,5 +1,6 @@
 package com.capstone.desk_nova.service;
 
+import com.capstone.desk_nova.model.Tickets;
 import com.capstone.desk_nova.model.Users;
 import jakarta.mail.Address;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,31 @@ public class EmailService {
                 "Your account has been created successfully. You can now log in and manage your support tickets."
                 );
 
+        mailSender.send(message);
+    }
+
+    public void sendTicketAssignmentEmail(Users agent, Tickets ticket) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("mail.dexnova.noreply");
+        message.setTo(agent.getEmail());
+        message.setSubject("New Ticket Assigned: [" + ticket.getPriority().getName() + "] #" + ticket.getId());
+
+        String content = String.format(
+                "Hello %s,\n\n" +
+                        "A new ticket has been assigned to you.\n\n" +
+                        "Ticket ID: #%d\n" +
+                        "Title: %s\n" +
+                        "Priority: %s\n" +
+                        "Description: %s\n\n" +
+                        "Please log in to the DeskNova dashboard to manage this request.",
+                agent.getFirstName(),
+                ticket.getId(),
+                ticket.getTitle(),
+                ticket.getPriority().getName(),
+                ticket.getDescription()
+        );
+
+        message.setText(content);
         mailSender.send(message);
     }
 
