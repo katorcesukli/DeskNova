@@ -201,8 +201,4 @@ public class TicketsService {
         ticketsRepository.deleteById(ticketId);
     }
 
-
-
-
-
 }
