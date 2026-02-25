@@ -18,6 +18,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -35,15 +36,7 @@ public class TicketsService {
     private final TicketPriorityRepository ticketPriorityRepository;
 
     public PaginatedResponse<TicketResponse> getAllTickets(Pageable pageable) {
-//        Users currentUser = authService.getCurrentAuthenticatedUser();
-
-        // for testing
-        Users currentUser = new Users();
-        currentUser.setId(1L);
-        currentUser.setFirstName("Dummy");
-        currentUser.setLastName("User");
-        currentUser.setRole(Roles.ADMIN);
-        currentUser.setCreatedAt(LocalDateTime.now());
+        Users currentUser = authService.getCurrentAuthenticatedUser();
 
         Page<Tickets> pagedTickets = switch (currentUser.getRole()) {
             case ADMIN -> this.ticketsRepository.findAll(pageable);
@@ -63,7 +56,7 @@ public class TicketsService {
                         PersonResponse.from(t.getClient()),
 
                         // handle tickets with no assigned agents
-                        Optional.ofNullable(t.getAgent()).map(a -> PersonResponse.from(t.getAgent())).orElse(null),
+                        Optional.ofNullable(t.getAgent()).map(PersonResponse::from).orElse(null),
                         t.getComments().stream().map(c -> new TicketCommentResponse(
                                 c.getId(),
                                 new PersonResponse(c.getUserId().getFullName(), c.getUserId().getEmail()),
@@ -88,16 +81,11 @@ public class TicketsService {
     }
 
     public TicketResponse getTicketById(Long ticketId) {
-        // Users currentUser = authService.getCurrentAuthenticatedUser();
+        Users currentUser = authService.getCurrentAuthenticatedUser();
 
-        // for testing
-        Users currentUser = new Users();
-        currentUser.setId(1L);
-        currentUser.setFirstName("Dummy");
-        currentUser.setLastName("User");
-        currentUser.setRole(Roles.ADMIN);
-        currentUser.setCreatedAt(LocalDateTime.now());
 
+        // [CONSIDER] create fetch methods for each role to have more control in handling exceptions
+        // e.g. differentiate "Ticket not found", "Ticket not assigned", and "Agent not found"
 
         Tickets t =  switch (currentUser.getRole()) {
             case ADMIN -> this.ticketsRepository.findById(ticketId)
@@ -116,7 +104,7 @@ public class TicketsService {
             t.getStatus().name(),
             t.getPriority().getName(),
             PersonResponse.from(t.getClient()),
-            Optional.ofNullable(t.getAgent()).map(a -> PersonResponse.from(t.getAgent())).orElse(null),
+            Optional.ofNullable(t.getAgent()).map(PersonResponse::from).orElse(null),
             t.getComments().stream().map(c -> new TicketCommentResponse(
                     c.getId(),
                     new PersonResponse(c.getUserId().getFullName(), c.getUserId().getEmail()),
@@ -154,14 +142,7 @@ public class TicketsService {
 
     @Transactional
     public Long createTicket(CreateTicketRequest req) {
-
-        Users exampleClient = new Users();
-        exampleClient.setId(13L);
-        exampleClient.setFirstName("Dummy");
-        exampleClient.setLastName("User");
-        exampleClient.setRole(Roles.ADMIN);
-        exampleClient.setCreatedAt(LocalDateTime.now());
-
+        Users currentUser = this.authService.getCurrentAuthenticatedUser();
 
         Tickets newTicket = new Tickets();
         newTicket.setTitle(req.title());
@@ -173,16 +154,27 @@ public class TicketsService {
 
         newTicket.setPriority(priority);
         newTicket.setCategory(TicketCategory.valueOf(req.category()));
-        newTicket.setClient(exampleClient);
+        newTicket.setClient(currentUser);
 
-        // try and assign to the agent with the lowest workload
+        // try and assign ticket to the agent with the lowest workload
         return this.ticketsRepository.save(assignTicket(newTicket)).getId();
     }
 
     public Long editTicket(Long ticketId, EditTicketRequest req) {
+
         Tickets ticket = this.ticketsRepository.findById(ticketId).orElseThrow(
                 () -> new EntityNotFoundException("Ticket not found")
         );
+
+        Users currentUser = this.authService.getCurrentAuthenticatedUser();
+
+        // check if the current user is a 'CLIENT' and the one who created the ticket
+        if(
+            currentUser.getRole().equals(Roles.CLIENT) &&
+            !currentUser.getId().equals(ticket.getClient().getId()))
+        {
+            throw new AccessDeniedException("Unauthorized to edit this ticket");
+        }
 
         ticket.setTitle(req.title());
         ticket.setDescription(req.description());
@@ -197,6 +189,19 @@ public class TicketsService {
         Tickets ticket = this.ticketsRepository.findById(ticketId).orElseThrow(
                 () -> new EntityNotFoundException("Ticket not found with id: " + ticketId));
 
+        Users currentUser = this.authService.getCurrentAuthenticatedUser();
+
+        // check if the current user is either a 'CLIENT' and the one who created the ticket
+        // or current user is an ADMIN
+        if(
+            (currentUser.getRole().equals(Roles.CLIENT) &&
+            !currentUser.getId().equals(ticket.getClient().getId()))
+            || currentUser.getRole().equals(Roles.ADMIN)
+        )
+        {
+            throw new AccessDeniedException("Unauthorized to edit this ticket");
+        }
+
         ticket.setStatus(TicketStatus.valueOf(status));
 
         return ticketsRepository.save(ticket).getId();
@@ -204,11 +209,24 @@ public class TicketsService {
     }
 
     public void deleteTicket(Long ticketId) {
-        if(!this.ticketsRepository.existsById(ticketId)) {
-            throw new EntityNotFoundException("Ticket not found");
+        Tickets ticket = this.ticketsRepository.findById(ticketId).orElseThrow(
+                () -> new EntityNotFoundException("Ticket not found")
+        );
+
+        Users currentUser = this.authService.getCurrentAuthenticatedUser();
+
+        // check if the current user is either a 'CLIENT' and the one who created the ticket
+        // or current user is an ADMIN
+        if(
+                (currentUser.getRole().equals(Roles.CLIENT) &&
+                !currentUser.getId().equals(ticket.getClient().getId()))
+                || currentUser.getRole().equals(Roles.ADMIN)
+        )
+        {
+            throw new AccessDeniedException("Unauthorized to delete this ticket");
         }
 
-        ticketsRepository.deleteById(ticketId);
+        ticketsRepository.delete(ticket);
     }
 
 

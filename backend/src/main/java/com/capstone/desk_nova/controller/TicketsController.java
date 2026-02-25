@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class TicketsController {
     private TicketsService ticketsService;
 
     @GetMapping
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('CLIENT', 'AGENT', 'ADMIN')")
     public ResponseEntity<PaginatedResponse<TicketResponse>> getAllTickets(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int pageSize
@@ -29,18 +30,20 @@ public class TicketsController {
         return ResponseEntity.ok(this.ticketsService.getAllTickets(PageRequest.of(page, pageSize, Sort.by("dateOpened"))));
     }
 
-        @GetMapping("/{id}")
-    //    @PreAuthorize("hasAuthority('CLIENT', 'AGENT', 'ADMIN')")
-        public ResponseEntity<TicketResponse> getTicketById(@PathVariable Long id) {
-            return ResponseEntity.ok(ticketsService.getTicketById(id));
-        }
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CLIENT', 'AGENT', 'ADMIN')")
+    public ResponseEntity<TicketResponse> getTicketById(@PathVariable Long id) {
+        return ResponseEntity.ok(ticketsService.getTicketById(id));
+    }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<String> createTicket(@Valid @RequestBody CreateTicketRequest ticket) {
         return ResponseEntity.ok(this.ticketsService.createTicket(ticket) + "Successfully assigned & created ticket");
     }
 
     @PutMapping("/edit/{id}")
+    @PreAuthorize("hasAnyRole('CLIENT')")
     public ResponseEntity<String> editTicket(
             @PathVariable Long id,
             @Valid @RequestBody EditTicketRequest req) {
@@ -48,19 +51,16 @@ public class TicketsController {
     }
 
     @PutMapping("/edit/status/{id}")
+    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
     public ResponseEntity<String> editStatus(@PathVariable Long id, @RequestBody EditStatusRequest req){
         Long editStatus = ticketsService.editStatus(id, req.status());
         return ResponseEntity.ok(editStatus + " " + "Changed status successfully");
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN')")
     public ResponseEntity<String> deleteTicket(@PathVariable Long id) {
         ticketsService.deleteTicket(id);
         return ResponseEntity.ok("Successfully deleted ticket");
-    }
-
-    @GetMapping("/test")
-    public ResponseEntity<List<AgentWorkloadResponse>> getAgentWorkload() {
-        return ResponseEntity.ok(this.ticketsService.getAgentWorkload());
     }
 }
