@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,16 +53,41 @@ public class MetricService {
                         Collectors.averagingLong(t -> Duration.between(t.getDateOpened(), t.getDateClosed()).toMinutes())
                 ));
 
+        //getAveResolvePerPriority put here
+        Map<String, Map<String, Double>> resolvePerPriority = getAveResolvePerPriority();
+
         return new TicketMetric(
                 totalTickets,
                 avgResolutionTime,
                 completionRate,
                 ticketsByStatus,
-                agentPerformance
+                agentPerformance,
+                resolvePerPriority
         );
     }
 
     public List<Tickets> getAllTickets() {
         return ticketsRepository.findAll();
+    }
+
+    public Map<String, Map<String, Double>> getAveResolvePerPriority() {
+        List<Tickets> allTickets = ticketsRepository.findAll();
+        DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MMM yyyy");
+
+        return allTickets.stream()
+                //filter for resolved tickets with valid dates
+                .filter(t -> t.getStatus() != null && t.getStatus().name().equalsIgnoreCase("RESOLVED"))
+                .filter(t -> t.getDateOpened() != null && t.getDateClosed() != null)
+                //filter for != priority
+                .filter(t -> t.getPriority() != null)
+                //filter by priority status and month
+                .collect(Collectors.groupingBy(
+                        t -> t.getDateClosed().format(monthFormatter),
+                        Collectors.groupingBy(
+                        t -> t.getPriority().getName(),
+                        Collectors.averagingLong(t ->
+                                Duration.between(t.getDateOpened(), t.getDateClosed()).toMinutes()
+                        )
+                )));
     }
 }

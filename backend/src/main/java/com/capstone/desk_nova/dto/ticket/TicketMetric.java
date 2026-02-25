@@ -14,5 +14,6 @@ public record TicketMetric(
         double avgResolutionTimeMinutes,
         double completionRate,
         Map<String, Long> ticketsByStatus,
-        Map<String, Double> agentPerformance
+        Map<String, Double> agentPerformance,
+        Map<String, Map<String, Double>> avgResolvePerPriorityPerMonth
 ) { }

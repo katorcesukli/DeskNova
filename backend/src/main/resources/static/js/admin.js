@@ -140,13 +140,28 @@ async function fetchMetrics() {
       const response = await fetch(METRIC_URL);
       const data = await response.json();
 
+      //refer to metric service return
       const metricsContent = document.getElementById('metricsContent');
 
+      //ticket status count
       const statusItems = Object.entries(data.ticketsByStatus)
             .map(([status, count]) => `<li>${status}: ${count}</li>`).join('');
 
+      //get agent perf
       const agentItems = Object.entries(data.agentPerformance)
             .map(([name, time]) => `<li>${name}: ${time.toFixed(1)}m</li>`).join('');
+
+      //getave per prio
+      let priorityMonthlyHtml = "";
+            if (data.avgResolvePerPriorityPerMonth) {
+                priorityMonthlyHtml = Object.entries(data.avgResolvePerPriorityPerMonth)
+                    .map(([month, priorities]) => {
+                        const prioList = Object.entries(priorities)
+                            .map(([prio, time]) => `<li>${prio}: ${time.toFixed(1)}m</li>`)
+                            .join('');
+                        return `<div style="margin-bottom:10px;"><strong>${month}</strong><ul>${prioList}</ul></div>`;
+                    }).join('');
+            }
 
         metricsContent.innerHTML = `
              <div class="metric-card">
@@ -162,6 +177,10 @@ async function fetchMetrics() {
              <div class="metric-card">
                  <strong>Agent Performance (Avg)</strong>
                  <ul>${agentItems || '<li>No data</li>'}</ul>
+             </div>
+             <div class="metric-card">
+                 <strong>Priority Avg / Month</strong>
+                 <div>${priorityMonthlyHtml || 'No data available'}</div>
              </div>
         `;
       } catch (error) {
