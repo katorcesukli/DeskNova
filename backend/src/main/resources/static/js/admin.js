@@ -13,8 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchUsers() {
     try {
         console.log("Attempting to fetch users from:", API_URL);
-        const response = await fetch(API_URL);
+        //const response = await fetch(API_URL);
+        //getter for token
+        const token = localStorage.getItem("jwtToken"); // get token
 
+        const response = await fetch(API_URL, {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+        //getter for token end
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -137,8 +146,19 @@ userModalContainer.style.display = 'none';
 
 async function fetchMetrics() {
   try {
-      const response = await fetch(METRIC_URL);
+      //const response = await fetch(METRIC_URL);
+      //const data = await response.json();
+
+      const token = localStorage.getItem("jwtToken"); // get token
+
+              const response = await fetch(METRIC_URL, {
+                  headers: {
+                      "Authorization": `Bearer ${token}`,
+                      "Content-Type": "application/json"
+                  }
+              });
       const data = await response.json();
+
 
       //refer to metric service return
       const metricsContent = document.getElementById('metricsContent');

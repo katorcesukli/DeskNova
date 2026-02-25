@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
-@CrossOrigin(originPatterns = "*")
+@CrossOrigin(originPatterns = "*", allowCredentials = "true")
 public class UsersController {
 
     private final UsersService usersService;
