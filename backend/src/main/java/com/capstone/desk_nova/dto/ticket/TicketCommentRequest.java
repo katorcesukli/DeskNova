@@ -4,8 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record TicketCommentRequest(
-        @NotNull(message = "Id is required")
-        Long id,
+        @NotNull(message = "Ticket id is required")
+        Long ticketId,
 
         @NotBlank(message = "Ticket comment is required")
         String comment

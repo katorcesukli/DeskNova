@@ -26,7 +26,7 @@ public class TicketCommentsService {
 
         Users currentUser = this.authService.getCurrentAuthenticatedUser();
 
-        Tickets currentTicket = this.ticketsRepository.findById(req.id()).orElseThrow(
+        Tickets currentTicket = this.ticketsRepository.findById(req.ticketId()).orElseThrow(
                 () -> new EntityNotFoundException("Ticket not found")
         );
 
@@ -72,7 +72,7 @@ public class TicketCommentsService {
         Users currentUser = this.authService.getCurrentAuthenticatedUser();
 
         if(!currentUser.getId().equals(comment.getUserId().getId())) {
-            throw new AccessDeniedException("You are not allowed to edit this comment");
+            throw new AccessDeniedException("You are not allowed to delete this comment");
         }
 
         ticketCommentsRepository.deleteById(id);
