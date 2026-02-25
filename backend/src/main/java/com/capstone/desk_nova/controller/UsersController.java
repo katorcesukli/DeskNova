@@ -45,7 +45,7 @@ public class UsersController {
 
 
     //ADMIN ENDPOINTS
-    // CREATE: Reuse registration logic for Admin-created users
+    //CREATE: Reuse registration logic for Admin-created users
     @PostMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Users> createUser(@RequestBody Users user) {

@@ -178,7 +178,7 @@ public class TicketsService {
 
         ticket.setTitle(req.title());
         ticket.setDescription(req.description());
-        ticket.setStatus(TicketStatus.valueOf(req.status()));
+//        ticket.setStatus(TicketStatus.valueOf(req.status()));
         ticket.setCategory(TicketCategory.valueOf(req.category()));
         ticket.setUpdatedAt(LocalDateTime.now());
 
@@ -186,6 +186,7 @@ public class TicketsService {
     }
 
     public Long editStatus(Long ticketId, String status ){
+
         Tickets ticket = this.ticketsRepository.findById(ticketId).orElseThrow(
                 () -> new EntityNotFoundException("Ticket not found with id: " + ticketId));
 
@@ -203,10 +204,33 @@ public class TicketsService {
         }
 
         ticket.setStatus(TicketStatus.valueOf(status));
+        TicketStatus currentStatus = ticket.getStatus();
+        TicketStatus newStatus = TicketStatus.valueOf(status);
 
+        Roles role = currentUser.getRole();
+
+        // validate transition
+        if (!isTransitionAllowed(role, currentStatus, newStatus)) {
+            throw new RuntimeException(
+                    "Role " + role + " cannot change ticket from "
+                            + currentStatus + " to " + newStatus);
+        }
+
+        ticket.setStatus(newStatus);
+        ticket.setUpdatedAt(LocalDateTime.now());
+
+        //set closed date
+
+        if (newStatus == TicketStatus.CLOSED) {
+            ticket.setDateClosed(LocalDateTime.now());
+        }
+
+
+//        ticket.setStatus(TicketStatus.valueOf(status));
         return ticketsRepository.save(ticket).getId();
-
     }
+
+
 
     public void deleteTicket(Long ticketId) {
         Tickets ticket = this.ticketsRepository.findById(ticketId).orElseThrow(
@@ -229,6 +253,35 @@ public class TicketsService {
         ticketsRepository.delete(ticket);
     }
 
+    private boolean isTransitionAllowed(Roles role, TicketStatus current, TicketStatus next) {
+
+        return switch (role) {
+            case AGENT -> switch (current) {
+
+                case OPEN -> next == TicketStatus.IN_PROGRESS ||
+                        next == TicketStatus.RESOLVED;
+
+                case IN_PROGRESS -> next == TicketStatus.RESOLVED;
+
+                case RESOLVED -> false;
+
+                case CLOSED -> false;
+            };
+            case CLIENT -> switch (current) {
+
+                case OPEN -> next == TicketStatus.CLOSED;
+
+                case IN_PROGRESS -> next == TicketStatus.CLOSED;
+
+                case RESOLVED -> next == TicketStatus.CLOSED ||
+                        next == TicketStatus.OPEN;
+
+                case CLOSED -> next == TicketStatus.OPEN;
+            };
+            case ADMIN -> true;
+            default -> false;
+        };
+    }
 
 
 

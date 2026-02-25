@@ -125,3 +125,66 @@ function openEditModal(email, first, last, role) {
 
     userModalContainer.style.display = 'block';
 }
+
+// Metri block
+const METRIC_URL = "http://localhost:8080/api/metric/admin";
+
+document.addEventListener('DOMContentLoaded', () => {
+userModalContainer.style.display = 'none';
+    fetchUsers();
+    fetchMetrics();
+});
+
+async function fetchMetrics() {
+  try {
+      const response = await fetch(METRIC_URL);
+      const data = await response.json();
+
+      //refer to metric service return
+      const metricsContent = document.getElementById('metricsContent');
+
+      //ticket status count
+      const statusItems = Object.entries(data.ticketsByStatus)
+            .map(([status, count]) => `<li>${status}: ${count}</li>`).join('');
+
+      //get agent perf
+      const agentItems = Object.entries(data.agentPerformance)
+            .map(([name, time]) => `<li>${name}: ${time.toFixed(1)}m</li>`).join('');
+
+      //getave per prio
+      let priorityMonthlyHtml = "";
+            if (data.avgResolvePerPriorityPerMonth) {
+                priorityMonthlyHtml = Object.entries(data.avgResolvePerPriorityPerMonth)
+                    .map(([month, priorities]) => {
+                        const prioList = Object.entries(priorities)
+                            .map(([prio, time]) => `<li>${prio}: ${time.toFixed(1)}m</li>`)
+                            .join('');
+                        return `<div style="margin-bottom:10px;"><strong>${month}</strong><ul>${prioList}</ul></div>`;
+                    }).join('');
+            }
+
+        metricsContent.innerHTML = `
+             <div class="metric-card">
+                 <strong>General</strong>
+                 <p>Total: ${data.totalTickets}</p>
+                 <p>Completion: ${data.completionRate.toFixed(1)}%</p>
+                 <p>Avg Resolve: ${data.avgResolutionTimeMinutes.toFixed(1)}m</p>
+             </div>
+             <div class="metric-card">
+                 <strong>By Status</strong>
+                 <ul>${statusItems || '<li>No data</li>'}</ul>
+             </div>
+             <div class="metric-card">
+                 <strong>Agent Performance (Avg)</strong>
+                 <ul>${agentItems || '<li>No data</li>'}</ul>
+             </div>
+             <div class="metric-card">
+                 <strong>Priority Avg / Month</strong>
+                 <div>${priorityMonthlyHtml || 'No data available'}</div>
+             </div>
+        `;
+      } catch (error) {
+          console.error("Metric Error:", error);
+          document.getElementById('metricsContent').innerHTML = "Error loading metrics.";
+   }
+}
