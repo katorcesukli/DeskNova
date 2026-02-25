@@ -5,6 +5,7 @@ import com.capstone.desk_nova.service.TicketCommentsService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,20 +17,23 @@ public class TicketCommentsController {
     private TicketCommentsService ticketCommentsService;
 
     @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('CLIENT', 'AGENT')")
     public ResponseEntity<Long> addComment(@Valid @RequestBody TicketCommentRequest req) {
-        return ResponseEntity.ok(ticketCommentsService.addComment(req));
+        return ResponseEntity.ok(this.ticketCommentsService.addComment(req));
     }
 
     @PutMapping("/edit/{id}")
+    @PreAuthorize("hasAnyRole('CLIENT', 'AGENT')")
     public ResponseEntity<Long> editComment(
             @PathVariable Long id,
             @Valid @RequestBody TicketCommentRequest req) {
-        return ResponseEntity.ok(ticketCommentsService.editTaskComment(id, req));
+        return ResponseEntity.ok(this.ticketCommentsService.editTaskComment(id, req));
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyRole('CLIENT', 'AGENT')")
     public ResponseEntity<String> deleteComment(@PathVariable Long id) {
-        ticketCommentsService.deleteComment(id);
+        this.ticketCommentsService.deleteComment(id);
         return ResponseEntity.ok("Successfully deleted comment");
     }
 }

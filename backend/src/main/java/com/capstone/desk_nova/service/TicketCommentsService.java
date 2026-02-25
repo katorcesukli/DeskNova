@@ -4,17 +4,14 @@ import com.capstone.desk_nova.dto.ticket.TicketCommentRequest;
 import com.capstone.desk_nova.model.TicketComments;
 import com.capstone.desk_nova.model.Tickets;
 import com.capstone.desk_nova.model.Users;
-import com.capstone.desk_nova.model.enums.Roles;
 import com.capstone.desk_nova.repository.TicketCommentsRepository;
 import com.capstone.desk_nova.repository.TicketsRepository;
-import com.capstone.desk_nova.repository.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @Data
@@ -22,47 +19,62 @@ import java.util.List;
 public class TicketCommentsService {
 
     private final TicketCommentsRepository ticketCommentsRepository;
-    private final UsersRepository usersRepository;
     private final TicketsRepository ticketsRepository;
-
-    public List<TicketComments> getCommentsByTicket(Long ticketId) {
-        return ticketCommentsRepository.findByTicketId(ticketId);
-    }
+    private final AuthService authService;
 
     public Long addComment(TicketCommentRequest req) {
 
-        Users exampleClient = new Users();
-        exampleClient.setId(1L);
-        exampleClient.setFirstName("Dummy");
-        exampleClient.setLastName("User");
-        exampleClient.setRole(Roles.CLIENT);
-        exampleClient.setCreatedAt(LocalDateTime.now());
+        Users currentUser = this.authService.getCurrentAuthenticatedUser();
 
         Tickets currentTicket = this.ticketsRepository.findById(req.id()).orElseThrow(
                 () -> new EntityNotFoundException("Ticket not found")
         );
 
+        // check if CLIENT owns ticket or AGENT is assigned to the ticket
+        boolean isAllowed = switch (currentUser.getRole()) {
+            case CLIENT -> currentTicket.getClient().getId().equals(currentUser.getId());
+            case AGENT -> currentTicket.getAgent().getId().equals(currentUser.getId());
+            default -> false;
+        };
+
+        if(!isAllowed) {
+            throw new AccessDeniedException("You are not allowed to access this resource");
+        }
+
         TicketComments newComment = new TicketComments();
-        newComment.setUserId(exampleClient);
+        newComment.setUserId(currentUser);
         newComment.setTicket(currentTicket);
         newComment.setComment(req.comment());
         return ticketCommentsRepository.save(newComment).getId();
     }
 
     public Long editTaskComment(Long ticketCommentId, TicketCommentRequest req) {
-        TicketComments currentTicket = this.ticketCommentsRepository.findById(ticketCommentId).orElseThrow(
+        TicketComments comment = this.ticketCommentsRepository.findById(ticketCommentId).orElseThrow(
                 () -> new EntityNotFoundException("Ticket not found")
         );
 
-        currentTicket.setComment(req.comment());
+        Users currentUser = this.authService.getCurrentAuthenticatedUser();
 
-        return this.ticketCommentsRepository.save(currentTicket).getId();
+        if(!currentUser.getId().equals(comment.getUserId().getId())) {
+            throw new AccessDeniedException("You are not allowed to edit this comment");
+        }
+
+        comment.setComment(req.comment());
+
+        return this.ticketCommentsRepository.save(comment).getId();
     }
 
     public void deleteComment(Long id) {
-        if(!this.ticketCommentsRepository.existsById(id)) {
-            throw new EntityNotFoundException("Ticket not found");
+        TicketComments comment = this.ticketCommentsRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Ticket not found")
+        );
+
+        Users currentUser = this.authService.getCurrentAuthenticatedUser();
+
+        if(!currentUser.getId().equals(comment.getUserId().getId())) {
+            throw new AccessDeniedException("You are not allowed to edit this comment");
         }
+
         ticketCommentsRepository.deleteById(id);
     }
 

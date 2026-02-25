@@ -11,6 +11,7 @@ import com.capstone.desk_nova.service.EmailService;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -103,7 +104,7 @@ public class AuthService {
     public Users getCurrentAuthenticatedUser(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(auth == null || !auth.isAuthenticated()){
-            throw new SecurityException("Unauthorized to access this resource");
+            throw new AccessDeniedException("Unauthorized to access this resource");
         }
 
         return this.usersRepository.findByEmail(auth.getName()).orElseThrow(
