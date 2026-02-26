@@ -63,4 +63,15 @@ public class TicketsController {
         ticketsService.deleteTicket(id);
         return ResponseEntity.ok("Successfully deleted ticket");
     }
+
+    //admin
+    @PutMapping("/admin/update/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> adminUpdateTicket(
+            @PathVariable Long id,
+            @Valid @RequestBody AdminTicketUpdateRequest req) {
+        ticketsService.adminUpdateTicket(id, req);
+        return ResponseEntity.ok("Ticket #" + id + " updated successfully by Admin.");
+    }
+
 }

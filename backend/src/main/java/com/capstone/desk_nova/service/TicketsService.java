@@ -298,4 +298,32 @@ public class TicketsService {
             case ADMIN -> true;
         };
     }
+
+    //admin crud
+    @Transactional
+    public Long adminUpdateTicket(Long ticketId, AdminTicketUpdateRequest req) {
+        Tickets ticket = this.ticketsRepository.findById(ticketId)
+                .orElseThrow(() -> new EntityNotFoundException("Ticket not found"));
+
+        // Update basic info
+        ticket.setTitle(req.title());
+        ticket.setDescription(req.description());
+        ticket.setCategory(TicketCategory.valueOf(req.category()));
+        ticket.setStatus(TicketStatus.valueOf(req.status()));
+
+        // Update Priority
+        TicketPriority priority = this.ticketPriorityRepository.findByName(req.priority())
+                .orElseThrow(() -> new EntityNotFoundException("Priority not found"));
+        ticket.setPriority(priority);
+
+        // Manual Agent Reassignment
+        if (req.agentId() != null) {
+            Users newAgent = this.usersRepository.findById(req.agentId())
+                    .orElseThrow(() -> new EntityNotFoundException("Agent not found"));
+            ticket.setAgent(newAgent);
+        }
+
+        ticket.setUpdatedAt(LocalDateTime.now());
+        return ticketsRepository.save(ticket).getId();
+    }
 }

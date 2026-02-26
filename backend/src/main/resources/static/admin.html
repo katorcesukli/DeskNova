@@ -4,10 +4,26 @@
     <meta charset="UTF-8">
     <title>DeskNova | Admin Management</title>
     <style>
-        /* Small style block to keep metrics readable */
+        /* Layout & Metrics */
         .metric-container { display: flex; gap: 40px; background: #f4f4f4; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
         .metric-card { flex: 1; }
-        #userModal { background: #fff; border: 1px solid #000; padding: 20px; position: fixed; top: 20%; left: 30%; width: 400px; }
+
+        /* Modal General Styling */
+        .modal {
+            background: #fff;
+            border: 2px solid #333;
+            padding: 20px;
+            position: fixed;
+            top: 15%;
+            left: 25%;
+            width: 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        table { border-collapse: collapse; margin-bottom: 30px; }
+        th, td { padding: 8px; text-align: left; }
+        .unassigned { color: red; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -24,10 +40,8 @@
 <br>
 
 <h3>User Management</h3>
-<button type="button" onclick="openCreateModal()">Add New User</button>
-
+<button type="button" onclick="openCreateModal()">+ Add New User</button>
 <hr>
-
 <table border="1" width="100%">
     <thead>
     <tr>
@@ -38,43 +52,92 @@
         <th>Actions</th>
     </tr>
     </thead>
-    <tbody id="userTableBody">
+    <tbody id="userTableBody"></tbody>
+</table>
+
+<h3>System Ticket Management (All Tickets)</h3>
+<hr>
+<table border="1" width="100%">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Client</th>
+        <th>Assigned Agent</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="adminTicketBody">
+    <tr><td colspan="6">Loading tickets...</td></tr>
     </tbody>
 </table>
 
-<div id="userModal" style="display:none;">
+<div id="userModal" class="modal" style="display:none;">
     <h3 id="modalTitle">Add User</h3>
     <form id="userForm">
         <input type="hidden" id="isEditMode" value="false">
         <input type="hidden" id="originalEmail">
-
-        <div>
-            <label>First Name:</label><br>
-            <input type="text" id="firstName" required>
-        </div>
-        <div>
-            <label>Last Name:</label><br>
-            <input type="text" id="lastName" required>
-        </div>
-        <div>
-            <label>Email:</label><br>
-            <input type="email" id="email" required>
-        </div>
-        <div>
-            <label>Password:</label><br>
-            <input type="password" id="password" placeholder="Leave blank to keep same">
-        </div>
-        <div>
-            <label>Role:</label><br>
+        <div><label>First Name:</label><br><input type="text" id="firstName" required></div>
+        <div><label>Last Name:</label><br><input type="text" id="lastName" required></div>
+        <div><label>Email:</label><br><input type="email" id="email" required></div>
+        <div><label>Password:</label><br><input type="password" id="password" placeholder="Leave blank to keep same"></div>
+        <div><label>Role:</label><br>
             <select id="role">
                 <option value="CLIENT">CLIENT</option>
                 <option value="AGENT">AGENT</option>
                 <option value="ADMIN">ADMIN</option>
             </select>
-        </div>
-        <br>
+        </div><br>
         <button type="submit">Save User</button>
         <button type="button" onclick="document.getElementById('userModal').style.display='none'">Cancel</button>
+    </form>
+</div>
+
+<div id="ticketModal" class="modal" style="display:none;">
+    <h3>Admin Ticket Override</h3>
+    <form id="ticketForm">
+        <input type="hidden" id="editTicketId">
+
+        <div style="display: flex; gap: 20px;">
+            <div style="flex: 1;">
+                <label>Title:</label><br><input type="text" id="editTitle" style="width:90%" required><br><br>
+                <label>Description:</label><br><textarea id="editDescription" rows="4" style="width:90%" required></textarea>
+            </div>
+            <div style="flex: 1;">
+                <label>Status:</label><br>
+                <select id="editStatus" style="width:95%">
+                    <option value="OPEN">OPEN</option>
+                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                    <option value="RESOLVED">RESOLVED</option>
+                    <option value="CLOSED">CLOSED</option>
+                </select><br><br>
+
+                <label>Category:</label><br>
+                <select id="editCategory" style="width:95%">
+                    <option value="HARDWARE">HARDWARE</option>
+                    <option value="SOFTWARE">SOFTWARE</option>
+                    <option value="NETWORK">NETWORK</option>
+                    <option value="ACCOUNTS_AND_ACCESS">ACCOUNTS_AND_ACCESS</option>
+                    <option value="SERVICES">SERVICES</option>
+                    <option value="GENERAL">GENERAL</option>
+                </select><br><br>
+
+                <label>Priority:</label><br>
+                <select id="editPriority" style="width:95%">
+                    <option value="LOW">LOW</option>
+                    <option value="MEDIUM">MEDIUM</option>
+                    <option value="HIGH">HIGH</option>
+                    <option value="CRITICAL">CRITICAL</option>
+                </select><br><br>
+
+                <label>Assign Agent (User ID):</label><br>
+                <input type="number" id="editAgentId" placeholder="Enter Agent ID" style="width:90%">
+            </div>
+        </div>
+        <br>
+        <button type="submit">Save System Override</button>
+        <button type="button" onclick="document.getElementById('ticketModal').style.display='none'">Cancel</button>
     </form>
 </div>
 
