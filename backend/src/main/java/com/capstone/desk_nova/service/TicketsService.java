@@ -150,6 +150,17 @@ public class TicketsService {
         ticket.setCategory(TicketCategory.valueOf(req.category()));
         ticket.setUpdatedAt(LocalDateTime.now());
 
+        //email block
+        Tickets savedTicket = this.ticketsRepository.save(assignTicket(ticket));
+
+        if (savedTicket.getAgent() != null) {
+            try {
+                emailService.sendTicketUpdateEmail(savedTicket.getAgent(), savedTicket);
+            } catch (Exception e) {
+                // Log error but don't fail ticket creation if email fails
+                System.err.println("Failed to send assignment email: " + e.getMessage());
+            }
+        }
         return ticketsRepository.save(ticket).getId();
     }
 
@@ -199,10 +210,38 @@ public class TicketsService {
         //update date and time after status change
         if (newStatus == TicketStatus.RESOLVED) {
             ticket.setDateResolved(LocalDateTime.now());
+
+            //right here
+            Users client = ticket.getClient();
+            Users agent = ticket.getAgent();
+
+            if (client != null) {
+                try {
+                    emailService.sendTicketResolvedEmail(client, agent, ticket);
+                } catch (Exception e) {
+                    System.err.println("Email failed: " + e.getMessage());
+                }
+            }
+
+
         }
         if (newStatus == TicketStatus.CLOSED) {
             ticket.setDateClosed(LocalDateTime.now());
+
+            //email block
+            Tickets savedTicket = this.ticketsRepository.save(assignTicket(ticket));
+
+            if (savedTicket.getAgent() != null) {
+                try {
+                    emailService.sendTicketClosedEmail(savedTicket.getAgent(), savedTicket);
+                } catch (Exception e) {
+                    // Log error but don't fail ticket creation if email fails
+                    System.err.println("Failed to send assignment email: " + e.getMessage());
+                }
+            }
         }
+
+
 
         return ticketsRepository.save(ticket).getId();
     }
