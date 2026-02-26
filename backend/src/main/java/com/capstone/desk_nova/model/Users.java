@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name ="users")
@@ -44,6 +45,10 @@ public class Users {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    // added for getting all agent workload
+    @OneToMany(mappedBy = "agent")
+    private List<Tickets> tickets;
 
     public String getFullName(){
         return this.firstName + " " + this.lastName;

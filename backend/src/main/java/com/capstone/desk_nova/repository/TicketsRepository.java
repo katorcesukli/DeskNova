@@ -26,14 +26,16 @@ public interface TicketsRepository extends JpaRepository<Tickets, Long>{
 
     @Query("""
         SELECT new com.capstone.desk_nova.dto.ticket.AgentWorkloadResponse(
-            t.agent.id,
-            SUM(t.priority.weight)
+            u.id as agent_id,
+            COALESCE(SUM(p.weight), 0) AS workload
         )
-        FROM Tickets t
-        WHERE t.status IN ('OPEN','IN_PROGRESS')
-          AND t.agent IS NOT NULL
-        GROUP BY t.agent.id
-        ORDER BY SUM(t.priority.weight) ASC
+        FROM Users u
+        LEFT JOIN u.tickets t
+            WITH t.status IN ('OPEN','IN_PROGRESS')
+        LEFT JOIN t.priority p
+        WHERE u.role = 'AGENT'
+        GROUP BY u.id
+        ORDER BY workload ASC
     """)
     List<AgentWorkloadResponse> getAgentWorkloads();
 }

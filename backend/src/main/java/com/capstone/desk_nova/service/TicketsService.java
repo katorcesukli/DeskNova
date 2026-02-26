@@ -79,6 +79,8 @@ public class TicketsService {
     }
 
     public Tickets assignTicket(Tickets ticket) {
+
+        // gets the agent with the lowest workload based on priority weight
         Long agentIdAssignee = this.ticketsRepository.getAgentWorkloads().getFirst().agentId();
 
         if(Optional.ofNullable(agentIdAssignee).isEmpty()) {
