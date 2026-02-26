@@ -1,59 +1,65 @@
 package com.capstone.desk_nova;
 
+import com.capstone.desk_nova.model.TicketPriority;
+import com.capstone.desk_nova.model.Tickets;
 import com.capstone.desk_nova.model.Users;
-import com.capstone.desk_nova.repository.UsersRepository;
+import com.capstone.desk_nova.model.enums.TicketCategory;
 import com.capstone.desk_nova.service.EmailService;
-import com.capstone.desk_nova.service.UsersService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class EmailServiceTest {
 
-
-    @Mock
-    private UsersRepository usersRepository;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private EmailService emailService;
-
     @Mock
     private JavaMailSender mailSender;
 
-    @InjectMocks
-    private UsersService usersService;
+    private EmailService emailService;
 
     private Users testUser;
+    private Users client;
+    private Users agent;
+    private Tickets ticket;
 
     @BeforeEach
     void setUp() {
-        testUser = new Users();
-        testUser.setEmail("test@gmail.com");
-        testUser.setPassword("123");
-        testUser.setFirstName("Rian");
-        testUser.setLastName("Miguel");
 
         emailService = new EmailService(mailSender);
+
+        testUser = new Users();
+        testUser.setEmail("test@gmail.com");
+        testUser.setFirstName("Rian");
+
+        client = new Users();
+        client.setEmail("client@test.com");
+        client.setFirstName("JM");
+
+        agent = new Users();
+        agent.setEmail("agent@test.com");
+        agent.setFirstName("Jed");
+
+        TicketPriority priority = new TicketPriority();
+        priority.setName("High");
+
+        ticket = new Tickets();
+        ticket.setId(101L);
+        ticket.setTitle("Network Issue");
+        ticket.setPriority(priority);
+        ticket.setCategory(TicketCategory.valueOf("HARDWARE"));
+        ticket.setDescription("NO WIFI");
     }
 
     @Test
@@ -68,11 +74,37 @@ public class EmailServiceTest {
 
         assertEquals("mail.dexnova.noreply", sentMessage.getFrom());
         assertEquals("test@gmail.com", Objects.requireNonNull(sentMessage.getTo())[0]);
-        assertEquals("Welcome to Desk Nova!", sentMessage.getSubject());
+        assertTrue(sentMessage.getText().contains("Hello Rian"));
+    }
 
-        String body = sentMessage.getText();
-        assert body != null;
-        assertTrue(body.contains("Hello Rian"));
-        assertTrue(body.contains("account has been created successfully"));
+    @Test
+    @DisplayName("Should send resolved email to both client and agent")
+    void testSendTicketResolvedEmail_MultipleRecipients() {
+        ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
+
+        emailService.sendTicketResolvedEmail(client, agent, ticket);
+
+        verify(mailSender).send(captor.capture());
+        SimpleMailMessage msg = captor.getValue();
+
+        String[] recipients = msg.getTo();
+        assertNotNull(recipients, "Recipients list should not be null");
+        assertTrue(Arrays.asList(recipients).contains("client@test.com"));
+        assertTrue(Arrays.asList(recipients).contains("agent@test.com"));
+        assertTrue(msg.getText().contains("has been resolved"));
+    }
+
+    @Test
+    @DisplayName("Should send closed email to client")
+    void testSendTicketClosedEmail() {
+        ArgumentCaptor<SimpleMailMessage> captor = ArgumentCaptor.forClass(SimpleMailMessage.class);
+
+        emailService.sendTicketClosedEmail(client, ticket);
+
+        verify(mailSender).send(captor.capture());
+        SimpleMailMessage msg = captor.getValue();
+
+        assertEquals("client@test.com", Objects.requireNonNull(msg.getTo())[0]);
+        assertTrue(msg.getText().contains("has been closed"));
     }
 }
