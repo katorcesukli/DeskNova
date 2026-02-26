@@ -1,13 +1,109 @@
 const API_URL = "http://localhost:8080/api/user";
 const userForm = document.getElementById('userForm');
 const userModalContainer = document.getElementById('userModal');
+const ticketModalContainer = document.getElementById('ticketModal'); // New Modal for Tickets
+const ticketForm = document.getElementById('ticketForm');
+
+const token = localStorage.getItem("jwtToken");
 
 // Initial load
 document.addEventListener('DOMContentLoaded', () => {
     // Hide form by default
     userModalContainer.style.display = 'none';
     fetchUsers();
+    fetchMetrics();
+    fetchTickets();
 });
+
+const TICKET_URL = "http://localhost:8080/api/ticket";
+async function fetchTickets() {
+    try {
+        const response = await fetch(`${TICKET_URL}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await response.json();
+        const tbody = document.getElementById('adminTicketBody');
+        if(!tbody) return;
+
+        tbody.innerHTML = (data.content || []).map(t => `
+            <tr>
+                <td>#${t.id}</td>
+                <td>${t.title}</td>
+                <td>${t.client.firstName}</td>
+                <td>${t.agent ? t.agent.firstName : '<strong>UNASSIGNED</strong>'}</td>
+                <td>${t.status}</td>
+                <td>
+                    <button type="button" onclick="openTicketEditModal(${t.id})">Edit</button>
+                    <button type="button" style="color:red" onclick="deleteTicket(${t.id})">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (error) { console.error("Ticket Fetch Error:", error); }
+}
+
+async function openTicketEditModal(id) {
+    try {
+        const response = await fetch(`${TICKET_URL}/${id}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        const t = await response.json();
+
+        // Fill Ticket Modal Fields
+        document.getElementById('editTicketId').value = t.id;
+        document.getElementById('editTitle').value = t.title;
+        document.getElementById('editDescription').value = t.description;
+        document.getElementById('editCategory').value = t.category;
+        document.getElementById('editStatus').value = t.status;
+        document.getElementById('editPriority').value = t.priority.name;
+        document.getElementById('editAgentId').value = t.agent ? t.agent.id : '';
+
+        ticketModalContainer.style.display = 'block';
+    } catch (error) { console.error("Error loading ticket:", error); }
+}
+
+ticketForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('editTicketId').value;
+
+    // Map to AdminTicketUpdateRequest DTO
+    const updateData = {
+        title: document.getElementById('editTitle').value,
+        description: document.getElementById('editDescription').value,
+        category: document.getElementById('editCategory').value,
+        status: document.getElementById('editStatus').value,
+        priority: document.getElementById('editPriority').value,
+        agentId: document.getElementById('editAgentId').value || null
+    };
+
+    try {
+        const response = await fetch(`${TICKET_URL}/admin/update/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(updateData)
+        });
+
+        if (response.ok) {
+            ticketModalContainer.style.display = 'none';
+            fetchTickets();
+            fetchMetrics(); // Update charts since status might have changed
+        } else {
+            alert("Failed to update ticket.");
+        }
+    } catch (error) { console.error("Error saving ticket:", error); }
+});
+
+async function deleteTicket(id) {
+    if (confirm(`Permanently delete Ticket #${id}?`)) {
+        const response = await fetch(`${TICKET_URL}/delete/${id}`, {
+            method: 'DELETE',
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (response.ok) fetchTickets();
+    }
+}
 
 // READ: Fetch all users
 async function fetchUsers() {
