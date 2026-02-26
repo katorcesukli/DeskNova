@@ -1,5 +1,6 @@
 package com.capstone.desk_nova.controller;
 
+import com.capstone.desk_nova.dto.person.UserResponse;
 import com.capstone.desk_nova.model.Users;
 import com.capstone.desk_nova.service.UsersService;
 import lombok.RequiredArgsConstructor;
@@ -22,44 +23,38 @@ public class UsersController {
     // Email test as well
     @PostMapping("/register")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Users> registerUser(@RequestBody Users user) {
-        Users createdUser = usersService.createUsers(user);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    public ResponseEntity<UserResponse> registerUser(@RequestBody Users user) {
+        return new ResponseEntity<>(usersService.createUsers(user), HttpStatus.CREATED);
     }
 
     // Get all users
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Users>> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(usersService.getAllUsers());
     }
 
     // Search for a user by email
     @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Users> getUserByEmail(@RequestParam String email) {
-        return usersService.findByEmail(email)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UserResponse> getUserByEmail(@RequestParam String email) {
+        return ResponseEntity.ok(usersService.findByEmail(email));
     }
-
 
     //ADMIN ENDPOINTS
     //CREATE: Reuse registration logic for Admin-created users
     @PostMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Users> createUser(@RequestBody Users user) {
-        Users createdUser = usersService.createUsers(user);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    public ResponseEntity<UserResponse> createUser(@RequestBody Users user) {
+        return new ResponseEntity<>(usersService.createUsers(user), HttpStatus.CREATED);
     }
 
 
     // UPDATE: Update user details by email
     @PutMapping("/admin/{email}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Users> updateUser(@PathVariable String email, @RequestBody Users userDetails) {
-        Users updatedUser = usersService.updateUser(email, userDetails);
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<UserResponse> updateUser(@PathVariable String email, @RequestBody Users userDetails) {
+        return ResponseEntity.ok(usersService.updateUser(email, userDetails));
     }
 
     // DELETE: Remove a user using email as the identifier

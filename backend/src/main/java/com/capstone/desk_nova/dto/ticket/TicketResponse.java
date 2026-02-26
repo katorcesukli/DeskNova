@@ -1,6 +1,6 @@
 package com.capstone.desk_nova.dto.ticket;
 
-import com.capstone.desk_nova.dto.person.PersonResponse;
+import com.capstone.desk_nova.dto.person.TicketPersonResponse;
 import com.capstone.desk_nova.model.Tickets;
 import jakarta.annotation.Nullable;
 
@@ -15,9 +15,9 @@ public record TicketResponse(
         String category,
         String status,
         String priority,
-        PersonResponse client,
+        TicketPersonResponse client,
         @Nullable
-        PersonResponse agent,
+        TicketPersonResponse agent,
         List<TicketCommentResponse> comments,
         LocalDateTime dateOpened,
         LocalDateTime dateClosed,
@@ -33,11 +33,11 @@ public record TicketResponse(
                         t.getCategory().name(),
                         t.getStatus().name(),
                         t.getPriority().getName(),
-                        PersonResponse.from(t.getClient()),
-                        Optional.ofNullable(t.getAgent()).map(PersonResponse::from).orElse(null),
+                        TicketPersonResponse.from(t.getClient()),
+                        Optional.ofNullable(t.getAgent()).map(TicketPersonResponse::from).orElse(null),
                         t.getComments().stream().map(c -> new TicketCommentResponse(
                                 c.getId(),
-                                new PersonResponse(c.getUserId().getFullName(), c.getUserId().getEmail()),
+                                new TicketPersonResponse(c.getUserId().getFullName(), c.getUserId().getEmail()),
                                 c.getComment(),
                                 c.getCreatedAt()
                         )).toList(),

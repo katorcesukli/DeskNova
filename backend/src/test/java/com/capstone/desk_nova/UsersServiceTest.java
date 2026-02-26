@@ -1,6 +1,8 @@
 package com.capstone.desk_nova;
 
+import com.capstone.desk_nova.dto.person.UserResponse;
 import com.capstone.desk_nova.model.Users;
+import com.capstone.desk_nova.model.enums.Roles;
 import com.capstone.desk_nova.repository.UsersRepository;
 import com.capstone.desk_nova.service.EmailService;
 import com.capstone.desk_nova.service.UsersService;
@@ -14,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,6 +47,7 @@ public class UsersServiceTest {
         testUser.setPassword("123");
         testUser.setFirstName("Rian");
         testUser.setLastName("Miguel");
+        testUser.setRole(Roles.CLIENT);
     }
 
     @Nested
@@ -59,7 +63,7 @@ public class UsersServiceTest {
             when(usersRepository.save(any(Users.class))).thenReturn(testUser);
 
             // Act
-            Users savedUser = usersService.createUsers(testUser);
+            UserResponse savedUser = usersService.createUsers(testUser);
 
             // Assert
             assertNotNull(savedUser);
@@ -95,14 +99,18 @@ public class UsersServiceTest {
             updatedDetails.setEmail("new@google.com");
             updatedDetails.setPassword("Password123");
 
-            when(usersRepository.findByEmail("test@google.com")).thenReturn(Optional.of(testUser));
+            // don't change these fields
+            updatedDetails.setRole(testUser.getRole());
+            updatedDetails.setUpdatedAt(LocalDateTime.now());
+
+            when(usersRepository.findByEmail(testUser.getEmail())).thenReturn(Optional.ofNullable(testUser));
             when(passwordEncoder.encode("Password123")).thenReturn("newEncodedPassword");
             when(usersRepository.save(any(Users.class))).thenReturn(testUser);
 
-            Users result = usersService.updateUser("test@google.com", updatedDetails);
+            UserResponse result = usersService.updateUser(testUser.getEmail(), updatedDetails);
 
-            assertEquals("new@google.com", result.getEmail());
-            assertEquals("newEncodedPassword", result.getPassword());
+            assertEquals("new@google.com", result.email());
+            assertEquals("newEncodedPassword", result.password());
             verify(usersRepository).save(testUser);
         }
     }

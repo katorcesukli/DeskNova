@@ -1,12 +1,12 @@
 package com.capstone.desk_nova.dto.ticket;
 
-import com.capstone.desk_nova.dto.person.PersonResponse;
+import com.capstone.desk_nova.dto.person.TicketPersonResponse;
 
 import java.time.LocalDateTime;
 
 public record TicketCommentResponse(
     Long id,
-    PersonResponse user,
+    TicketPersonResponse user,
     String comment,
     LocalDateTime createdAt
 ) {}

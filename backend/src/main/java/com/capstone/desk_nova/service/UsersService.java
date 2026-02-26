@@ -1,8 +1,10 @@
 package com.capstone.desk_nova.service;
 
+import com.capstone.desk_nova.dto.person.UserResponse;
 import com.capstone.desk_nova.model.Tickets;
 import com.capstone.desk_nova.model.Users;
 import com.capstone.desk_nova.repository.UsersRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -22,15 +24,15 @@ public class UsersService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
-    public List<Users> getAllUsers() {
-        return usersRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        return usersRepository.findAll().stream().map(UserResponse::from).toList();
     }
 
-    public Optional<Users> findByEmail(String email) {
-        return usersRepository.findByEmail(email);
+    public UserResponse findByEmail(String email) {
+        return UserResponse.from(usersRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("User does not exist")));
     }
 
-    public Users createUsers(Users users) {
+    public UserResponse createUsers(Users users) {
         if (usersRepository.existsByEmail(users.getEmail())) {
             throw new RuntimeException("Email already exists: " + users.getEmail());
         }
@@ -46,25 +48,27 @@ public class UsersService {
             System.err.println("Failed to send welcome email: " + e.getMessage());
         }
 
-        return savedUser;
+        return UserResponse.from(users);
     }
     //ADMIN CRUD METHODS BLOCK
     @Transactional
-    public Users updateUser(String email, Users updateDetails) {
-        return usersRepository.findByEmail(email).map(user -> {
-            user.setEmail(updateDetails.getEmail());
-            user.setFirstName(updateDetails.getFirstName());
-            user.setLastName(updateDetails.getLastName());
-            user.setRole(updateDetails.getRole());
-            user.setUpdatedAt(java.time.LocalDateTime.now());
+    public UserResponse updateUser(String email, Users updateDetails) {
 
-            // Only update password if a new one is provided
-            if (updateDetails.getPassword() != null && !updateDetails.getPassword().isEmpty()) {
-                user.setPassword(passwordEncoder.encode(updateDetails.getPassword()));
-            }
+        Users currentUser = usersRepository.findByEmail(email).
+                orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
 
-            return usersRepository.save(user);
-        }).orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        currentUser.setEmail(updateDetails.getEmail());
+        currentUser.setFirstName(updateDetails.getFirstName());
+        currentUser.setLastName(updateDetails.getLastName());
+        currentUser.setRole(updateDetails.getRole());
+        currentUser.setUpdatedAt(java.time.LocalDateTime.now());
+
+        // Only update password if a new one is provided
+        if (updateDetails.getPassword() != null && !updateDetails.getPassword().isEmpty()) {
+            currentUser.setPassword(passwordEncoder.encode(updateDetails.getPassword()));
+        }
+
+        return UserResponse.from(usersRepository.save(currentUser));
     }
 
     @Transactional
