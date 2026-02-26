@@ -43,7 +43,7 @@ public class TicketsController {
     }
 
     @PutMapping("/edit/{id}")
-    @PreAuthorize("hasAnyRole('CLIENT')")
+    @PreAuthorize("hasAnyRole('CLIENT', 'AGENT')")
     public ResponseEntity<String> editTicket(
             @PathVariable Long id,
             @Valid @RequestBody EditTicketRequest req) {

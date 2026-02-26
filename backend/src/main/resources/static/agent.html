@@ -1,1 +1,47 @@
-agent page
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Agent Workspace - Desk Nova</title>
+</head>
+<body>
+<h1>Agent Kanban Board</h1>
+<button onclick="logout()">Logout</button>
+<hr>
+
+<div style="display: flex; align-items: flex-start;">
+
+    <div id="col-OPEN" style="flex: 1; border: 1px solid black; margin: 5px; padding: 10px;">
+        <h2>Open</h2>
+        <div class="task-list"></div>
+    </div>
+
+    <div id="col-IN_PROGRESS" style="flex: 1; border: 1px solid black; margin: 5px; padding: 10px;">
+        <h2>In Progress</h2>
+        <div class="task-list"></div>
+    </div>
+
+    <div id="col-RESOLVED" style="flex: 1; border: 1px solid black; margin: 5px; padding: 10px;">
+        <h2>Resolved</h2>
+        <div class="task-list"></div>
+    </div>
+
+</div>
+
+<div id="detailsArea" style="display:none; border: 2px solid blue; margin-top: 20px; padding: 20px;">
+    <button onclick="closeDetails()">Close Details</button>
+    <div id="ticketDetails"></div>
+
+    <hr>
+    <h3>Comments</h3>
+    <div id="commentList"></div>
+
+    <div style="margin-top: 10px;">
+        <textarea id="newCommentText" rows="4" cols="50" placeholder="Type your reply..."></textarea><br>
+        <button onclick="submitComment()">Post Comment</button>
+    </div>
+</div>
+
+<script src="js/agent.js"></script>
+</body>
+</html>

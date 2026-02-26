@@ -1,1 +1,52 @@
-client page
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client Dashboard - Desk Nova</title>
+</head>
+<body>
+<h1>My Support Tickets</h1>
+<button onclick="logout()">Logout</button>
+<hr>
+
+<div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px;">
+    <h3>Create New Ticket</h3>
+    <form id="createTicketForm">
+        <input type="text" id="title" placeholder="Title" required><br><br>
+        <textarea id="description" placeholder="Describe your issue..." required></textarea><br><br>
+
+        <label>Priority:</label>
+        <select id="priority">
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+        </select>
+
+        <label>Category:</label>
+        <select id="category">
+            <option value="TECHNICAL">Technical</option>
+            <option value="BILLING">Billing</option>
+            <option value="OTHER">Other</option>
+        </select><br><br>
+
+        <button type="submit">Submit Ticket</button>
+    </form>
+</div>
+
+<div id="ticketContainer">
+</div>
+
+<div id="detailsModal" style="display:none; border: 2px solid green; padding: 20px; margin-top: 20px;">
+    <button onclick="closeModal()" style="float: right;">Close</button>
+    <div id="ticketDetails"></div>
+    <hr>
+    <h4>Conversation</h4>
+    <div id="commentList" style="max-height: 200px; overflow-y: auto; background: #f9f9f9; padding: 10px;"></div>
+    <br>
+    <textarea id="newCommentText" rows="3" style="width: 100%;" placeholder="Write a reply..."></textarea><br>
+    <button onclick="submitComment()">Post Comment</button>
+</div>
+
+<script src="js/client.js"></script>
+</body>
+</html>
