@@ -7,7 +7,7 @@ CREATE TABLE users
     last_name  VARCHAR(100) NOT NULL,
     role       ENUM('CLIENT', 'AGENT', 'ADMIN') NOT NULL,
     created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at DATETIME
 ) ENGINE=InnoDB;
 
 CREATE TABLE tickets
@@ -46,7 +46,7 @@ CREATE TABLE tickets
     date_opened DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     date_closed DATETIME NULL,
     assigned_at DATETIME NULL,
-    updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at  DATETIME ,
 
     CONSTRAINT fk_ticket_client
         FOREIGN KEY (client_id)
@@ -66,7 +66,7 @@ CREATE TABLE ticket_comments
     user_id    BIGINT      NOT NULL,
     comment    TEXT     NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at DATETIME ,
 
     CONSTRAINT fk_comment_ticket
         FOREIGN KEY (ticket_id)
