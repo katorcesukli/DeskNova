@@ -37,6 +37,7 @@ function sortIntoColumns(tickets) {
         const filtered = tickets.filter(t => t.status === status);
         
         filtered.forEach(t => {
+            console.log("Ticket object:", t);
             const card = document.createElement('div');
             card.style.border = "1px dotted gray";
             card.style.margin = "10px 0";
@@ -44,8 +45,8 @@ function sortIntoColumns(tickets) {
             
             card.innerHTML = `
                 <strong>${t.title}</strong><br>
-                <small>Client: ${t.client.firstName}</small><br>
-                <small>Priority: ${t.priority.name}</small><br>
+                <small>Client: ${t.client.fullName}</small><br>
+                <small>Priority: ${t.priority}</small><br>
                 <div style="margin-top:5px;">
                     ${status === 'OPEN' ? `<button onclick="updateStatus(${t.id}, 'IN_PROGRESS')">Start Work</button>` : ''}
                     ${status === 'IN_PROGRESS' ? `<button onclick="updateStatus(${t.id}, 'RESOLVED')">Resolve</button>` : ''}
@@ -104,7 +105,7 @@ function renderComments(comments) {
     const list = document.getElementById('commentList');
     list.innerHTML = comments.map(c => `
         <div style="background: #eee; margin-bottom: 5px; padding: 5px;">
-            <strong>${c.user.firstName}:</strong> ${c.comment} 
+            <strong>${c.user.fullName}:</strong> ${c.comment} 
             <br><small>${new Date(c.createdAt).toLocaleString()}</small>
         </div>
     `).join('') || '<p>No comments yet.</p>';
