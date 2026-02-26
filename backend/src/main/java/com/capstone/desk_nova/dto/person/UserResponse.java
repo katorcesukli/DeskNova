@@ -11,7 +11,8 @@ public record UserResponse (
     String role,
     String email,
     String password,
-    LocalDateTime createdAt
+    LocalDateTime createdAt,
+    LocalDateTime updatedAt
 ) {
     public static UserResponse from(Users user){
         return new UserResponse(
@@ -21,7 +22,8 @@ public record UserResponse (
                 user.getRole().name(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getCreatedAt()
+                user.getCreatedAt(),
+                user.getUpdatedAt()
         );
     }
 }
