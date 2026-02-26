@@ -136,6 +136,35 @@ public class EmailService {
         message.setText(content);
         mailSender.send(message);
     }
+
+    public void sendCommentNotificationEmail(Users recipient, Users commenter, Tickets ticket, String commentText) {
+        if (recipient == null || recipient.getEmail() == null) return;
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("mail.dexnova.noreply");
+        message.setTo(recipient.getEmail());
+        message.setSubject("New Comment on Ticket #: " + ticket.getId() + " [" + ticket.getTitle() + "]");
+
+        String content = String.format(
+                "Hello %s,\n\n" +
+                        "%s %s has added a new comment to ticket #%d:\n\n" +
+                        "\"%s\"\n\n" +
+                        "Priority: %s\n" +
+                        "Status: %s\n\n" +
+                        "Please log in to desknova to resolve this issue.",
+                recipient.getFirstName(),
+                commenter.getFirstName(),
+                commenter.getLastName(),
+                ticket.getId(),
+                commentText,
+                ticket.getPriority().getName(),
+                ticket.getStatus()
+        );
+
+        message.setText(content);
+        mailSender.send(message);
+    }
+
     public void sendTestEmail(Users user) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("mail.dexnova.noreply");
@@ -148,11 +177,4 @@ public class EmailService {
         mailSender.send(message);
     }
 
-    public void sendNotification(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-        mailSender.send(message);
-    }
 }
