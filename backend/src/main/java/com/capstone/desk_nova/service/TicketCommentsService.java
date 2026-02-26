@@ -4,6 +4,7 @@ import com.capstone.desk_nova.dto.ticket.TicketCommentRequest;
 import com.capstone.desk_nova.model.TicketComments;
 import com.capstone.desk_nova.model.Tickets;
 import com.capstone.desk_nova.model.Users;
+import com.capstone.desk_nova.model.enums.Roles;
 import com.capstone.desk_nova.repository.TicketCommentsRepository;
 import com.capstone.desk_nova.repository.TicketsRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,6 +22,7 @@ public class TicketCommentsService {
     private final TicketCommentsRepository ticketCommentsRepository;
     private final TicketsRepository ticketsRepository;
     private final AuthService authService;
+    private final EmailService emailService;
 
     public Long addComment(TicketCommentRequest req) {
 
@@ -40,11 +42,31 @@ public class TicketCommentsService {
         if(!isAllowed) {
             throw new AccessDeniedException("You are not allowed to access this resource");
         }
+        //method to check commenter
+        Users recipient = null;
+        if (currentUser.getRole() == Roles.CLIENT) {
+            // Client commented -> Notify Agent
+            recipient = currentTicket.getAgent();
+        } else if (currentUser.getRole() == Roles.AGENT || currentUser.getRole() == Roles.ADMIN) {
+            // Agent or Admin commented -> Notify Client
+            recipient = currentTicket.getClient();
+        }
 
         TicketComments newComment = new TicketComments();
         newComment.setUserId(currentUser);
         newComment.setTicket(currentTicket);
         newComment.setComment(req.comment());
+
+        //email block
+        if (recipient != null) {
+            try {
+                emailService.sendCommentNotificationEmail(recipient, currentUser, currentTicket, req.comment());
+            } catch (Exception e) {
+                // Log and continue - don't crash the comment save if email fails
+                System.err.println("Comment email notification failed: " + e.getMessage());
+            }
+        }
+
         return ticketCommentsRepository.save(newComment).getId();
     }
 
