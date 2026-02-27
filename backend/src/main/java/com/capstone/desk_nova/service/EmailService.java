@@ -4,19 +4,23 @@ import com.capstone.desk_nova.model.Tickets;
 import com.capstone.desk_nova.model.Users;
 import jakarta.mail.Address;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class EmailService {
 
+    @Autowired
     private final JavaMailSender mailSender;
 
     private static final String TOKEN = "8bd4d4cff9df4fcd14ad043732b42438";
 
     //upon registration, send a notif email
+    @Async
     public void sendWelcomeEmail(Users user) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("mail.dexnova.noreply");
@@ -29,6 +33,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    @Async
     public void sendTicketAssignmentEmail(Users agent, Tickets ticket) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("mail.dexnova.noreply");
@@ -56,6 +61,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    @Async
     public void sendTicketUpdateEmail(Users client, Tickets ticket) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("mail.dexnova.noreply");
@@ -83,6 +89,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    @Async
     public void sendTicketResolvedEmail(Users client, Users agent, Tickets ticket) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("mail.dexnova.noreply");
@@ -110,6 +117,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    @Async
     public void sendTicketClosedEmail(Users client, Tickets ticket) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("mail.dexnova.noreply");
@@ -137,6 +145,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    @Async
     public void sendCommentNotificationEmail(Users recipient, Users commenter, Tickets ticket, String commentText) {
         if (recipient == null || recipient.getEmail() == null) return;
 
@@ -165,6 +174,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    @Async
     public void sendTestEmail(Users user) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("mail.dexnova.noreply");
