@@ -177,8 +177,10 @@ public class TicketsService {
 
         // check if the current user is either a 'CLIENT' and the one who created the ticket
         // or current user is an ADMIN
-        if (role == Roles.CLIENT &&
-                !currentUser.getId().equals(ticket.getClient().getId())) {
+        if (
+                role == Roles.CLIENT &&
+                !currentUser.getId().equals(ticket.getClient().getId())
+        ) {
 
             throw new AccessDeniedException(
                     "You can only modify your own tickets");
@@ -252,6 +254,15 @@ public class TicketsService {
         Tickets ticket = this.ticketsRepository.findById(ticketId).orElseThrow(
                 () -> new EntityNotFoundException("Ticket not found")
         );
+
+        boolean isAllowed = switch(ticket.getStatus()){
+            case RESOLVED, CLOSED ->  false;
+            default -> true;
+        };
+
+        if(!isAllowed){
+            throw new IllegalStateException("Closed or resolved tickets cannot be deleted");
+        }
 
         Users currentUser = this.authService.getCurrentAuthenticatedUser();
 
