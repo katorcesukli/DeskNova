@@ -17,13 +17,13 @@ public class TicketCommentsController {
     private TicketCommentsService ticketCommentsService;
 
     @PostMapping("/create")
-    @PreAuthorize("hasAnyRole('CLIENT', 'AGENT')")
+    @PreAuthorize("hasAnyRole('CLIENT', 'AGENT', 'ADMIN')")
     public ResponseEntity<Long> addComment(@Valid @RequestBody TicketCommentRequest req) {
         return ResponseEntity.ok(this.ticketCommentsService.addComment(req));
     }
 
     @PutMapping("/edit/{id}")
-    @PreAuthorize("hasAnyRole('CLIENT', 'AGENT')")
+    @PreAuthorize("hasAnyRole('CLIENT', 'AGENT', 'ADMIN')")
     public ResponseEntity<Long> editComment(
             @PathVariable Long id,
             @Valid @RequestBody TicketCommentRequest req) {
@@ -31,7 +31,7 @@ public class TicketCommentsController {
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyRole('CLIENT', 'AGENT')")
+    @PreAuthorize("hasAnyRole('CLIENT', 'AGENT', 'ADMIN')")
     public ResponseEntity<String> deleteComment(@PathVariable Long id) {
         this.ticketCommentsService.deleteComment(id);
         return ResponseEntity.ok("Successfully deleted comment");
