@@ -255,25 +255,17 @@ public class TicketsService {
                 () -> new EntityNotFoundException("Ticket not found")
         );
 
-        boolean isAllowed = switch(ticket.getStatus()){
-            case RESOLVED, CLOSED ->  false;
-            default -> true;
-        };
-
-        if(!isAllowed){
-            throw new IllegalStateException("Closed or resolved tickets cannot be deleted");
-        }
-
         Users currentUser = this.authService.getCurrentAuthenticatedUser();
 
         // check if the current user is either a 'CLIENT' and the one who created the ticket
         // or current user is an ADMIN
-        if(
-                (currentUser.getRole().equals(Roles.CLIENT) &&
-                !currentUser.getId().equals(ticket.getClient().getId()))
-                || currentUser.getRole().equals(Roles.ADMIN)
-        )
-        {
+        boolean isAllowed = switch (currentUser.getRole()){
+            case CLIENT -> currentUser.getId().equals(ticket.getClient().getId());
+            case ADMIN -> true;
+            default -> false;
+        };
+
+        if(!isAllowed){
             throw new AccessDeniedException("Unauthorized to delete this ticket");
         }
 

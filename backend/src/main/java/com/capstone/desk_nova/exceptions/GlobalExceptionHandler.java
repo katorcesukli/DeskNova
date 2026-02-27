@@ -73,6 +73,19 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse<String>> handleIllegalStateException(IllegalStateException e, WebRequest req) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponse<>(
+                        LocalDateTime.now(),
+                        HttpStatus.BAD_REQUEST.value(),
+                        HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                        e.getMessage(),
+                        req.getDescription(false).replace("uri=", "")
+                )
+        );
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse<Map<String, String>>> handleValidationException(MethodArgumentNotValidException ex, WebRequest req) {
         Map<String, String> messages = ex.getBindingResult()

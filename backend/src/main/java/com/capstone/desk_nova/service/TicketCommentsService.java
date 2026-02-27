@@ -81,6 +81,17 @@ public class TicketCommentsService {
             throw new AccessDeniedException("You are not allowed to edit this comment");
         }
 
+        boolean isAllowed = switch(comment.getTicket().getStatus()){
+            case RESOLVED, CLOSED -> false;
+            default -> true;
+        };
+
+        // add check for deletion of closed or resolved tickets
+        if(!isAllowed){
+            throw new IllegalStateException("Closed or resolved tickets cannot be deleted");
+        }
+
+
         comment.setComment(req.comment());
 
         return this.ticketCommentsRepository.save(comment).getId();
