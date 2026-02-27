@@ -1,7 +1,6 @@
 package com.capstone.desk_nova.dto.ticket;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public record AdminTicketUpdateRequest(
         @NotBlank(message = "Title is required")
@@ -20,4 +19,12 @@ public record AdminTicketUpdateRequest(
         String priority,
 
         Long agentId
-) {}
+) {
+        public AdminTicketUpdateRequest {
+                title = title.trim();
+                description = description.trim();
+                category = category.trim();
+                status = status.trim();
+                priority = priority.trim();
+        }
+}

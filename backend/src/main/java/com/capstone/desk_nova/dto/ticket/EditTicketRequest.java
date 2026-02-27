@@ -13,4 +13,10 @@ public record EditTicketRequest(
 
         @NotBlank(message = "Ticket category is required")
         String category
-) {}
+) {
+        public EditTicketRequest {
+                title = title.trim();
+                description = description.trim();
+                category = category.trim();
+        }
+}
