@@ -37,7 +37,7 @@ public record TicketResponse(
                         Optional.ofNullable(t.getAgent()).map(TicketPersonResponse::from).orElse(null),
                         t.getComments().stream().map(c -> new TicketCommentResponse(
                                 c.getId(),
-                                new TicketPersonResponse(c.getUserId().getFullName(), c.getUserId().getEmail()),
+                                TicketPersonResponse.from(c.getUserId()),
                                 c.getComment(),
                                 c.getCreatedAt()
                         )).toList(),
