@@ -47,7 +47,7 @@ public class TicketCommentsService {
         if (currentUser.getRole() == Roles.CLIENT) {
             // Client commented -> Notify Agent
             recipient = currentTicket.getAgent();
-        } else if (currentUser.getRole() == Roles.AGENT || currentUser.getRole() == Roles.ADMIN) {
+        } else {
             // Agent or Admin commented -> Notify Client
             recipient = currentTicket.getClient();
         }
@@ -90,6 +90,17 @@ public class TicketCommentsService {
         TicketComments comment = this.ticketCommentsRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Ticket not found")
         );
+
+        boolean isAllowed = switch(comment.getTicket().getStatus()){
+            case RESOLVED, CLOSED -> false;
+            default -> true;
+        };
+
+
+        // add check for deletion of closed or resolved tickets
+        if(!isAllowed){
+            throw new IllegalStateException("Closed or resolved tickets cannot be deleted");
+        }
 
         Users currentUser = this.authService.getCurrentAuthenticatedUser();
 
