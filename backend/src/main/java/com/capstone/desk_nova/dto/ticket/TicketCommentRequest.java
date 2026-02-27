@@ -9,4 +9,8 @@ public record TicketCommentRequest(
 
         @NotBlank(message = "Ticket comment is required")
         String comment
-) {}
+) {
+        public TicketCommentRequest {
+                comment = comment.trim();
+        }
+}

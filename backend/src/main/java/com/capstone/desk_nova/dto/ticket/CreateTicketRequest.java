@@ -19,4 +19,12 @@ public record CreateTicketRequest(
 
         @NotBlank(message = "Ticket category is required")
         String category
-) {}
+) {
+        public CreateTicketRequest {
+                title = title.trim();
+                description = description.trim();
+                status = status.trim();
+                priority = priority.trim();
+                category = category.trim();
+        }
+}
