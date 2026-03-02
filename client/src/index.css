@@ -1,35 +1,39 @@
-/* Tailwind base imports */
-@tailwind base;
-@tailwind components;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind utilities;
+@import 'tailwindcss';
 
-@import "tailwindcss";
-
-/* minimal global reset; use Tailwind utilities for layout and colors */
-
-/* inline link styles should also be handled by Tailwind, remove global */
-
-body {
-  margin: 0;
-  /* do not force flex centering globally, let components control layout */
-  min-width: 320px;
-  min-height: 100vh;
-  /* background handled via Tailwind classes on root container */
+@theme inline {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --color-background: oklch(0.14 0.01 255);
+  --color-foreground: oklch(0.92 0.01 255);
+  --color-card: oklch(0.18 0.01 255);
+  --color-card-foreground: oklch(0.92 0.01 255);
+  --color-popover: oklch(0.20 0.01 255);
+  --color-popover-foreground: oklch(0.92 0.01 255);
+  --color-primary: oklch(0.60 0.18 250);
+  --color-primary-foreground: oklch(0.98 0.01 250);
+  --color-secondary: oklch(0.22 0.01 255);
+  --color-secondary-foreground: oklch(0.85 0.01 255);
+  --color-muted: oklch(0.22 0.01 255);
+  --color-muted-foreground: oklch(0.65 0.01 255);
+  --color-accent: oklch(0.28 0.02 250);
+  --color-accent-foreground: oklch(0.95 0.01 250);
+  --color-destructive: oklch(0.62 0.23 25);
+  --color-destructive-foreground: oklch(0.98 0.01 25);
+  --color-border: oklch(0.26 0.01 255);
+  --color-input: oklch(0.22 0.01 255);
+  --color-ring: oklch(0.62 0.18 250);
+  --radius: 0.5rem;
 }
 
-/* make all interactive elements show pointer */
-button,
-a {
-  @apply cursor-pointer;
+@layer base {
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  * {
+    @apply border-border;
+  }
 }
-button:disabled {
-  @apply cursor-not-allowed;
-}
-
-
-
-
-
-
-
-
+  
