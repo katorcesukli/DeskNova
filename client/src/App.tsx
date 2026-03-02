@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 
@@ -7,9 +7,12 @@ import RegisterPage from './pages/RegisterPage';
 import AdminPage from './pages/AdminPage';
 import AgentPage from './pages/AgentPage';
 import ClientPage from './pages/ClientPage';
+import TestPage from './pages/TestPage';
 
 // simple wrapper to protect routes
-const PrivateRoute: React.FC<{ children: JSX.Element; roles?: string[] }> = ({ children, roles }) => {
+function PrivateRoute(
+  { children, roles }: {children: ReactNode, roles?:string[]}
+){
   const { user } = React.useContext(AuthContext);
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -28,6 +31,7 @@ function App() {
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/test" element={<TestPage />} />
           <Route
             path="/admin"
             element={
