@@ -1,3 +1,12 @@
+
+export const ROLE_VALUES = [
+  "CLIENT",
+  "AGENT",
+  "ADMIN"
+] as const;
+
+
+
 // ticket priority enum
 
 export const TICKET_PRIORITY_VALUES = [
@@ -27,3 +36,4 @@ export const TICKET_STATUS_VALUES = [
 export type TicketPriority = (typeof TICKET_PRIORITY_VALUES)[number];
 export type TicketCategory = (typeof TICKET_CATEGORY_VALUES)[number];
 export type TicketStatus = (typeof TICKET_STATUS_VALUES)[number];
+export type Role = (typeof ROLE_VALUES)[number];
