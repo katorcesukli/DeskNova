@@ -16,5 +16,14 @@ export const TICKET_CATEGORY_VALUES = [
     "GENERAL"
 ] as const;
 
+export const TICKET_STATUS_VALUES = [
+    "OPEN",
+    "IN_PROGRESS",
+    "RESOLVED",
+    "CLOSED",
+] as const;
+
+
 export type TicketPriority = (typeof TICKET_PRIORITY_VALUES)[number];
 export type TicketCategory = (typeof TICKET_CATEGORY_VALUES)[number];
+export type TicketStatus = (typeof TICKET_STATUS_VALUES)[number];

@@ -1,3 +1,5 @@
+import type { TicketPriority, TicketStatus } from "./enums";
+
 export type User = {
   id?: number;
   firstName: string;
@@ -25,6 +27,50 @@ export type TicketWithComments = {
   priority: { name: string };
   comments?: Array<{ user: { fullName: string }; comment: string; createdAt: string }>;
 }
+
+
+
+type TicketPerson = {
+  fullName: string,
+  email: string,
+  role: string
+}
+
+export type TicketResponse = {
+  id: number,
+  title: string,
+  description: string,
+  category: string,
+  status: TicketStatus,
+  priority: TicketPriority,
+  client: TicketPerson,
+  agent?: TicketPerson,
+  dateOpened: Date,
+  dateClosed: Date,
+  assignedAt: Date,
+  updatedAt: Date,
+  comments: TicketCommentResponse[]
+}
+
+
+export interface PaginatedResponse<T> {
+  content: T[],
+  currentPage: number,
+  totalPages: number,
+  totalItems: number,
+  pageSize: number,
+  hasNext: boolean,
+  hasPrevious: boolean
+}
+
+
+export type TicketCommentResponse = {
+    id: number,
+    user: TicketPerson,
+    comment: string,
+    createdAt: Date
+}   
+
 
 
 export type LoginRequest = {
