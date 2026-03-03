@@ -8,6 +8,7 @@ import AdminPage from './pages/AdminPage';
 import AgentPage from './pages/AgentPage';
 import ClientPage from './pages/ClientPage';
 import TestPage from './pages/TestPage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // simple wrapper to protect routes
 function PrivateRoute(
@@ -23,41 +24,46 @@ function PrivateRoute(
   return children;
 };
 
+// tanstack query client
+const queryClient = new QueryClient;
+
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/test" element={<TestPage />} />
-          <Route
-            path="/admin"
-            element={
-              <PrivateRoute roles={["ADMIN"]}>
-                <AdminPage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/agent"
-            element={
-              <PrivateRoute roles={["AGENT"]}>
-                <AgentPage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/client"
-            element={
-              <PrivateRoute roles={["CLIENT"]}>
-                <ClientPage />
-              </PrivateRoute>
-            }
-          />
-        </Routes>
-      </AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/test" element={<TestPage />} />
+            <Route
+              path="/admin"
+              element={
+                <PrivateRoute roles={["ADMIN"]}>
+                  <AdminPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/agent"
+              element={
+                <PrivateRoute roles={["AGENT"]}>
+                  <AgentPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/client"
+              element={
+                <PrivateRoute roles={["CLIENT"]}>
+                  <ClientPage />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </AuthProvider>
+      </QueryClientProvider>
     </Router>
   );
 }
