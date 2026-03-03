@@ -1,24 +1,8 @@
 import Button from "../../src/components/ui/Button";
 import Modal from "../../src/components/ui/Modal";
-import cn from "../../src/lib/cn";
-import { TICKET_CATEGORY_VALUES, TICKET_PRIORITY_VALUES, type TicketPriority } from "../../types/enums";
+import { getPriorityLabelStyles } from "../../src/lib/utils";
+import { TICKET_CATEGORY_VALUES, TICKET_PRIORITY_VALUES } from "../../types/enums";
 
-
-const priorityStyles: Record<TicketPriority, string> = {
-  LOW: "border-green-500 text-green-400 hover:bg-green-500/10 peer-checked:bg-green-600 peer-checked:text-white",
-  MEDIUM: "border-yellow-500 text-yellow-400 hover:bg-yellow-500/10 peer-checked:bg-yellow-500 peer-checked:text-black",
-  HIGH: "border-orange-500 text-orange-400 hover:bg-orange-500/10 peer-checked:bg-orange-600 peer-checked:text-white",
-  CRITICAL: "border-red-600 text-red-500 hover:bg-red-600/10 peer-checked:bg-red-700 peer-checked:text-white",
-};
-
-function getPriorityLabelStyles(priority: TicketPriority) {
-  return cn(
-    // base style
-    "cursor-pointer rounded-lg px-4 py-2 capitalize text-xs font-medium border transition-all",
-    
-    priorityStyles[priority]
-  )
-}
 
 export default function CreateTicketModal(
     {onClose} : { onClose: () => void }
@@ -85,7 +69,7 @@ export default function CreateTicketModal(
                                     htmlFor={category}
                                     className="cursor-pointer rounded-lg px-4 py-2 capitalize text-xs font-medium border transition-all peer-checked:bg-gray-700 peer-checked:text-white"
                                 >
-                                    {category.toLocaleLowerCase()}
+                                    {category.replaceAll("_", " ").toLocaleLowerCase()}
                                 </label>
                             </div>
                         ))}
