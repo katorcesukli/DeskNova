@@ -1,7 +1,7 @@
 # DeskNova Client - AI Coding Agent Instructions
 
 ## Project Overview
-DeskNova is a **role-based ticket management SPA** built with React 19, TypeScript, Vite, and Tailwind CSS. It serves three distinct user roles: **ADMIN**, **AGENT**, and **CLIENT**, each with separate dashboards (`/admin`, `/agent`, `/client`). The backend API runs at `http://localhost:8080/api`.
+DeskNova is a **role-based ticket management SPA** built with React 19, TypeScript, Vite, and Tailwind CSS. It serves three distinct user roles: **ADMIN**, **AGENT**, and **CLIENT**, each with separate dashboards (`/admin`, `/agent`, `/client`). The backend API runs at `https://refreshing-respect-production-9b46.up.railway.app/api`.
 
 ## Architecture & Data Flow
 
@@ -24,7 +24,7 @@ types/                   → Centralized TypeScript interfaces (User, Ticket, Ti
 ```
 
 ### API Integration Pattern
-- **Base URL**: `http://localhost:8080/api`
+- **Base URL**: `https://refreshing-respect-production-9b46.up.railway.app/api`
 - **Endpoints Used**:
   - `/auth/login` — POST, returns `{token, firstName, lastName, role, email, id}`
   - `/auth/register` — POST, user signup
@@ -98,7 +98,7 @@ npm run preview  # Preview production build locally
 - All requests to backend must be authenticated with JWT token in header
 - Backend expects `Content-Type: application/json` for POST/PATCH
 - Backend response on auth failure returns error message in `data.message`
-- **Critical**: Backend runs on port 8080; verify it's running before testing (localhost:8080/api is reachable)
+- **Critical**: Backend runs on production URL; verify it's running before testing (refreshing-respect-production-9b46.up.railway.app/api is reachable)
 
 ## Code Style & Best Practices
 
@@ -131,7 +131,7 @@ npm run preview  # Preview production build locally
 ## Testing & Debugging
 
 ### Manual Testing Checklist
-1. Verify backend API is running on localhost:8080
+1. Verify backend API is running on https://refreshing-respect-production-9b46.up.railway.app
 2. Clear localStorage before testing auth flow (`localStorage.clear()` in console)
 3. Test PrivateRoute by logging in with different roles, attempting invalid route access
 4. Check network tab in DevTools — all JWT-protected requests must have `Authorization` header

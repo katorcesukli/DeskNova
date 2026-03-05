@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = 'https://refreshing-respect-production-9b46.up.railway.app/api';
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();

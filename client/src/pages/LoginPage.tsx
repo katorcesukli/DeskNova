@@ -4,7 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = 'https://refreshing-respect-production-9b46.up.railway.app/api';
 
 const LoginPage: React.FC = () => {
   const { login } = useContext(AuthContext);

@@ -23,8 +23,8 @@ interface Comment {
   createdAt: string;
 }
 
-const API_BASE = 'http://localhost:8080/api/ticket';
-const COMMENT_API = 'http://localhost:8080/api/comment';
+const API_BASE = 'https://refreshing-respect-production-9b46.up.railway.app/api/ticket';
+const COMMENT_API = 'https://refreshing-respect-production-9b46.up.railway.app/api/comment';
 
 export default function AgentPage() {
   const { logout } = useContext(AuthContext);
