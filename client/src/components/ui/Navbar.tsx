@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Button from './Button';
 
 export default function Navbar({ title, onLogout }: { title?: string; onLogout?: () => void }) {
