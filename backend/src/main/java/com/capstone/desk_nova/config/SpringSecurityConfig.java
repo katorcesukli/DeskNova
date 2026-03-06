@@ -42,14 +42,17 @@ public class SpringSecurityConfig {
         authProvider.setPasswordEncoder(passwordEncoder());
 
         http
+
+                // Enable CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+
                 // Disable CSRF (important for POST from JS)
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // Enable CORS
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+
 
                 .authenticationProvider(authProvider)
 
