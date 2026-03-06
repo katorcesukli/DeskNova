@@ -19,11 +19,11 @@ spring:
   #email properties
   mail:
     #host: smtp.office365.com
-    host: sandbox.smtp.mailtrap.io
-    port: 2525
+    host: smtp.gmail.com
+    port: 587
     #587 2525
-    username: f8149413ba1420
-    password: 79f6e744f15c04
+    username: desk.nova.info@gmail.com
+    password: ${EMAIL_PASSWORD}
     properties:
       mail:
         smtp:
