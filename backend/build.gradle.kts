@@ -10,7 +10,7 @@ description = "A simple IT ticketing with workload allocation management and adm
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 
