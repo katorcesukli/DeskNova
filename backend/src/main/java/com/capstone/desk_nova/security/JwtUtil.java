@@ -6,6 +6,8 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
@@ -15,16 +17,23 @@ public class JwtUtil {
 //    private final String SECRET =
 //            "mySecretKeymySecretKeymySecretKey";
 
-    private final Key key;
+    private final String secret;
     private final long expiration;
 
     public JwtUtil(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.expiration:604800000}") long expiration
     ){
-        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+        this.secret = secret;
         this.expiration = expiration;
     }
+
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(this.secret);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+
 
 //    private final Key key =
 //            Keys.hmacShaKeyFor(SECRET.getBytes());
@@ -40,14 +49,14 @@ public class JwtUtil {
                 .setExpiration(
                         new Date(System.currentTimeMillis() + expiration)
                 )
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String extractUsername(String token) {
 
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -73,7 +82,7 @@ public class JwtUtil {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

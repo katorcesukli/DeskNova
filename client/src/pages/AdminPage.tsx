@@ -65,11 +65,24 @@ export default function AdminPage() {
 
   const fetchTickets = async () => {
     try {
-      const res = await fetch(`${TICKET_URL}`, {
+      // First, fetch the first page to get total pages
+      const firstRes = await fetch(`${TICKET_URL}?page=0&pageSize=10`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      setTickets(data.content || []);
+      const firstData = await firstRes.json();
+      let allTickets = firstData.content || [];
+      const totalPages = firstData.totalPages || 1;
+
+      // Fetch remaining pages if any
+      for (let page = 1; page < totalPages; page++) {
+        const res = await fetch(`${TICKET_URL}?page=${page}&pageSize=10`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        allTickets = allTickets.concat(data.content || []);
+      }
+
+      setTickets(allTickets);
       setTicketPage(1);
     } catch (err) {
       console.error('fetchTickets error', err);
