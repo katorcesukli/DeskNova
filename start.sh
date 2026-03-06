@@ -1,3 +1,3 @@
 cd backend/deploy
 # Run the JAR with Railway's dynamic port
-java -Dserver.port=$PORT -jar myapp-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
+java -Dserver.port=$PORT -jar myapp-0.0.1-SNAPSHOT.jar
