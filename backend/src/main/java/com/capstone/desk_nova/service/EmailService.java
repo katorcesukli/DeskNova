@@ -23,7 +23,7 @@ public class EmailService {
     @Async
     public void sendWelcomeEmail(Users user) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("mail.dexnova.noreply");
+        message.setFrom("desk.nova.info@gmail.com");
         message.setTo(user.getEmail());
         message.setSubject("Welcome to Desk Nova!");
         message.setText("Hello " + user.getFirstName() + ",\n\n" +
@@ -36,7 +36,7 @@ public class EmailService {
     @Async
     public void sendTicketAssignmentEmail(Users agent, Tickets ticket) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("mail.dexnova.noreply");
+        message.setFrom("desk.nova.info@gmail.com");
         message.setTo(agent.getEmail());
         message.setSubject("New Ticket Assigned: [" + ticket.getPriority().getName() + "] #" + ticket.getId());
 
@@ -64,7 +64,7 @@ public class EmailService {
     @Async
     public void sendTicketUpdateEmail(Users client, Tickets ticket) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("mail.dexnova.noreply");
+        message.setFrom("desk.nova.info@gmail.com");
         message.setTo(client.getEmail());
         message.setSubject("Update Ticket Assigned: [" + ticket.getPriority().getName() + "] #" + ticket.getId());
 
@@ -92,7 +92,7 @@ public class EmailService {
     @Async
     public void sendTicketResolvedEmail(Users client, Users agent, Tickets ticket) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("mail.dexnova.noreply");
+        message.setFrom("desk.nova.info@gmail.com");
         message.setTo(client.getEmail(), agent.getEmail());
         message.setSubject("Resolved Ticket Assigned: [" + ticket.getPriority().getName() + "] #" + ticket.getId());
 
@@ -120,7 +120,7 @@ public class EmailService {
     @Async
     public void sendTicketClosedEmail(Users client, Tickets ticket) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("mail.dexnova.noreply");
+        message.setFrom("desk.nova.info@gmail.com");
         message.setTo(client.getEmail());
         message.setSubject("Closed Ticket Assigned: [" + ticket.getPriority().getName() + "] #" + ticket.getId());
 
@@ -150,7 +150,7 @@ public class EmailService {
         if (recipient == null || recipient.getEmail() == null) return;
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("mail.dexnova.noreply");
+        message.setFrom("desk.nova.info@gmail.com");
         message.setTo(recipient.getEmail());
         message.setSubject("New Comment on Ticket #: " + ticket.getId() + " [" + ticket.getTitle() + "]");
 
@@ -177,7 +177,7 @@ public class EmailService {
     @Async
     public void sendTestEmail(Users user) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("mail.dexnova.noreply");
+        message.setFrom("desk.nova.info@gmail.com");
         message.setTo("Test@gmail.com");
         message.setSubject("Welcome to Desk Nova!");
         message.setText("Hello " + user.getFirstName() + ",\n\n" +
