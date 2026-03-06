@@ -8,8 +8,8 @@ import { getStatusClasses, getPriorityClasses } from '../lib/badges';
 import type { TicketWithComments } from '../../types';
 import Pagination from '../components/Pagination';
 
-const API_BASE = 'https://gleaming-patience-production.up.railway.app/api/ticket';
-const COMMENT_API = 'https://gleaming-patience-production.up.railway.app/api/comment';
+const API_BASE = 'https://lucky-perception-production-d1b1.up.railway.app/api/ticket';
+const COMMENT_API = 'https://lucky-perception-production-d1b1.up.railway.app/api/comment';
 
 export default function ClientPage(){
   const { logout } = useContext(AuthContext);

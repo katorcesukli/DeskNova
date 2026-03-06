@@ -23,8 +23,8 @@ interface Comment {
   createdAt: string;
 }
 
-const API_BASE = 'https://gleaming-patience-production.up.railway.app/api/ticket';
-const COMMENT_API = 'https://gleaming-patience-production.up.railway.app/api/comment';
+const API_BASE = 'https://lucky-perception-production-d1b1.up.railway.app/api/ticket';
+const COMMENT_API = 'https://lucky-perception-production-d1b1.up.railway.app/api/comment';
 
 export default function AgentPage() {
   const { logout } = useContext(AuthContext);
