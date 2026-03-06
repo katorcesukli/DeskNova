@@ -19,11 +19,11 @@ spring:
   #email properties
   mail:
     #host: smtp.office365.com
-    host: sandbox.smtp.mailtrap.io
-    port: 2525
+    host: smtp.gmail.com
+    port: 587
     #587 2525
-    username: f8149413ba1420
-    password: 79f6e744f15c04
+    username: desk.nova.info@gmail.com
+    password: xqfz hjfz zhzt yrmd
     properties:
       mail:
         smtp:
@@ -32,6 +32,6 @@ spring:
             enable: true
 
 jwt:
-  secret: "lK9zQw7h2VfYpR3uXn8aJt5mC4dHb0oGqTwZcN5vXyB8eFsUjLkM7r1nEy6vPa="
+  secret: "BhNkCusVh80QcdKicwzYgXR6vtDfrRi27KdjF/4V/BSITtcVGz/bXioIBNQxW782riM1tgCWDjpnlqQjD/lDQg=="
   expiration: 86400000
 
