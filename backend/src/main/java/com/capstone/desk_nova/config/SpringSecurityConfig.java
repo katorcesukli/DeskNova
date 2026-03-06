@@ -55,13 +55,12 @@ public class SpringSecurityConfig {
 
                 // Allow all requests
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() 
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/", "/index.html", "/admin.html","/login.html", "/register.html","/client.html","/agent.html").permitAll()
                         .requestMatchers("/css/**", "/js/**").permitAll()
 
 
-                        // Secure endpoints
-                        .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
