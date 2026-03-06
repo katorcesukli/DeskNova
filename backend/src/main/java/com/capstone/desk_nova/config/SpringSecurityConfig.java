@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -48,8 +49,8 @@ public class SpringSecurityConfig {
 
         http
 
-                // Enable CORS
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // looks for a bean name corsConfig
+                .cors(Customizer.withDefaults())
 
                 // Disable CSRF (important for POST from JS)
                 .csrf(csrf -> csrf.disable())
@@ -64,7 +65,7 @@ public class SpringSecurityConfig {
                 // Allow all requests
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/**", "/api/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/", "/index.html", "/admin.html","/login.html", "/register.html","/client.html","/agent.html").permitAll()
                         .requestMatchers("/css/**", "/js/**").permitAll()
 
@@ -104,7 +105,7 @@ public class SpringSecurityConfig {
                 )
         );
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
