@@ -12,9 +12,9 @@ import { getStatusClasses, getPriorityClasses } from '../lib/badges';
 
 
 
-const API_URL = 'https://refreshing-respect-production-9b46.up.railway.app/api/user';
-const TICKET_URL = 'https://refreshing-respect-production-9b46.up.railway.app/api/ticket';
-const METRIC_URL = 'https://refreshing-respect-production-9b46.up.railway.app/api/metric/admin';
+const API_URL = 'https://gleaming-patience-production.up.railway.app/api/user';
+const TICKET_URL = 'https://gleaming-patience-production.up.railway.app/api/ticket';
+const METRIC_URL = 'https://gleaming-patience-production.up.railway.app/api/metric/admin';
 
 export default function AdminPage() {
   const { logout } = useContext(AuthContext);
