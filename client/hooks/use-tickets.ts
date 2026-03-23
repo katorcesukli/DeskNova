@@ -1,7 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import type { PaginatedResponse, TicketResponse } from '../types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { ApiErrorResponse, PaginatedResponse, TicketResponse } from '../types';
 import type { AuthContextType } from '../src/context/AuthContext';
 import { API_BASE_URL } from '../src/lib/constants';
+import type { InsertTicketType } from '../types/models';
+import { ticketRequest } from '../src/services/ticket.api';
 
 
 type UseTicketResult = {
@@ -35,4 +37,19 @@ export function useTickets(token: AuthContextType['token']) : UseTicketResult
         error: error,
         isSuccess: isSuccess
     }
+}
+
+export function useCreateTicket(){
+
+    return useMutation<
+        unknown,
+        ApiErrorResponse<string | Record<string, string>>,
+        InsertTicketType
+    >({
+        mutationFn: async (ticket: InsertTicketType) => {
+            await ticketRequest.createTicket(ticket);
+        },
+    });
+
+    
 }
