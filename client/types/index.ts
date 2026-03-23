@@ -106,3 +106,11 @@ export type MetricResponse = {
   agentPerformance: Record<string, number>;
   avgResolvePerPriorityPerMonth?: Record<string, Record<string, number>>;
 }
+
+export type ApiErrorResponse<E> = {
+  timestamp: Date,
+  status: number,
+  error: string,
+  message: E,
+  path: string,
+}

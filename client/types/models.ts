@@ -22,6 +22,7 @@ export const User = z.object({
         .min(4, errorMessages.minChar('Password'))
         .max(MAX_CHAR, errorMessages.maxChar('Password', MAX_CHAR))
         .trim(),
+    email: z.email(errorMessages.email).trim(),
     role: z.enum(ROLE_VALUES),
     createdAt: z.date(),
     updatedAt: z.date(),
@@ -39,9 +40,9 @@ export const Tickets = z.object({
         .min(MIN_CHAR, errorMessages.minChar('Ticket Description'))
         .max(MAX_CHAR, errorMessages.maxChar('Ticket Description', MAX_CHAR))
         .trim(),
-    status: z.enum(TICKET_STATUS_VALUES, 'Only select status from the listed options'),
-    priority: z.enum(TICKET_PRIORITY_VALUES, 'Only select priority from the listed options'),
-    category: z.enum(TICKET_CATEGORY_VALUES, 'Only select category from the listed options'),
+    status: z.enum(TICKET_STATUS_VALUES, 'Ticket Status is required'),
+    priority: z.enum(TICKET_PRIORITY_VALUES, 'Ticket Priority is required'),
+    category: z.enum(TICKET_CATEGORY_VALUES, 'Ticket Category is required'),
     assignedAt: z.date(),
     dateClosed: z.date(),
     dateResolved: z.date(),
@@ -67,3 +68,6 @@ export const InsertTicketSchema = Tickets.pick({
     priority: true,
     category: true,
 })
+
+
+export type InsertTicketType = z.input<typeof InsertTicketSchema>
