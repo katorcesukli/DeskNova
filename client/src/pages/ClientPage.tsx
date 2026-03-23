@@ -148,47 +148,47 @@ export default function ClientPage(){
         <Navbar title="My Support Tickets" onLogout={logout} />
 
             <div className="bg-white shadow-md rounded-lg p-6">
-            <h3 className="font-semibold text-xl">Create New Ticket</h3>
-            <form onSubmit={submitNewTicket} className="space-y-4 mt-4">
-            <Input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea
-                placeholder="Describe your issue..."
-                className="w-full border rounded px-2 py-1"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-              />
-            </div>
-            <div className="flex gap-4">
-                <div className="flex-1">
-                <label className="block text-sm font-medium">Priority:</label>
-                <select
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value)}
-                >
-                    <option value="LOW">Low</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="HIGH">High</option>
-                    <option value="CRITICAL">Critical</option>
-                </select>
-                </div>
-                <div className="flex-1">
-                <label className="block text-sm font-medium">Category:</label>
-                <select
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                >
-                    <option value="HARDWARE">Hardware</option>
-                    <option value="SOFTWARE">Software</option>
-                    <option value="NETWORK">Network</option>
-                    <option value="ACCOUNTS_AND_ACCESS">Accounts & Access</option>
-                    <option value="SERVICES">Services</option>
-                    <option value="GENERAL">General</option>
-                </select>
+              <h3 className="font-semibold text-xl">Create New Ticket</h3>
+              <form onSubmit={submitNewTicket} className="space-y-4 mt-4">
+              <Input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea
+                  placeholder="Describe your issue..."
+                  className="w-full border rounded px-2 py-1"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex gap-4">
+                  <div className="flex-1">
+                  <label className="block text-sm font-medium">Priority:</label>
+                  <select
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      value={priority}
+                      onChange={(e) => setPriority(e.target.value)}
+                  >
+                      <option value="LOW">Low</option>
+                      <option value="MEDIUM">Medium</option>
+                      <option value="HIGH">High</option>
+                      <option value="CRITICAL">Critical</option>
+                  </select>
+                  </div>
+                  <div className="flex-1">
+                  <label className="block text-sm font-medium">Category:</label>
+                  <select
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                  >
+                      <option value="HARDWARE">Hardware</option>
+                      <option value="SOFTWARE">Software</option>
+                      <option value="NETWORK">Network</option>
+                      <option value="ACCOUNTS_AND_ACCESS">Accounts & Access</option>
+                      <option value="SERVICES">Services</option>
+                      <option value="GENERAL">General</option>
+                  </select>
                 </div>
             </div>
             <Button type="submit" variant="primary">Submit Ticket</Button>
