@@ -1,6 +1,6 @@
 package com.capstone.desk_nova.dto.ticket;
 
-import com.capstone.desk_nova.dto.person.PersonResponse;
+import com.capstone.desk_nova.dto.person.TicketPersonResponse;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Null;
 import lombok.Data;
