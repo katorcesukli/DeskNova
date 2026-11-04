@@ -3,9 +3,9 @@ spring:
     name: desk-nova
 
   datasource:
-    url: jdbc:mysql://localhost:3306/desk_nova?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password: B0ch0g
+    url: jdbc:mysql://localhost:3307/desk_nova_db
+    username: user
+    password: secret
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
